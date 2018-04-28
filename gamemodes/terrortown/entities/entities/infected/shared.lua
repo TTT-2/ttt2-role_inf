@@ -115,7 +115,9 @@ if SERVER then
         
         target:UpdateRole(ROLES.INFECTED.index)
     
-        table.insert(INFECTED[attacker], target)
+        if INFECTED[attacker] then
+            table.insert(INFECTED[attacker], target)
+        end
         
         target:StripWeapons()
         
