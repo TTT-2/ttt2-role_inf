@@ -1,8 +1,14 @@
 AddCSLuaFile()
 
 if SERVER then
-   resource.AddFile("materials/vgui/ttt/icon_inf.vmt")
-   resource.AddFile("materials/vgui/ttt/sprite_inf.vmt")
+    -- Bloody Knife
+    resource.AddWorkshop("380972923")
+    
+    -- Zombie Perks
+    resource.AddWorkshop("842302491")
+
+    resource.AddFile("materials/vgui/ttt/icon_inf.vmt")
+    resource.AddFile("materials/vgui/ttt/sprite_inf.vmt")
 end
 
 -- important to add roles with this function,
@@ -60,9 +66,34 @@ function InitInfected(ply)
 end
 
 if SERVER then
+    zombie_sound_idles = {
+        "npc/zombie/zombie_voice_idle1.wav",
+        "npc/zombie/zombie_voice_idle2.wav",
+        "npc/zombie/zombie_voice_idle3.wav",
+        "npc/zombie/zombie_voice_idle4.wav",
+        "npc/zombie/zombie_voice_idle5.wav",
+        "npc/zombie/zombie_voice_idle6.wav",
+        "npc/zombie/zombie_voice_idle7.wav",
+        "npc/zombie/zombie_voice_idle8.wav",
+        "npc/zombie/zombie_voice_idle9.wav",
+        "npc/zombie/zombie_voice_idle10.wav",
+        "npc/zombie/zombie_voice_idle11.wav",
+        "npc/zombie/zombie_voice_idle12.wav",
+        "npc/zombie/zombie_voice_idle13.wav",
+        "npc/zombie/zombie_voice_idle14.wav"
+    }
+
     util.AddNetworkString("TTT_InitInfected")
 
     INFECTED = {}
+    
+    function StartZombieIdle(target, name)
+        if not target or not IsValid(target) or not target:IsPlayer() then 
+            timer.Stop(name) 
+        end
+        
+        target:EmitSound(table.Random(zombie_sound_idles))
+    end
     
     function AddInfected(target, attacker)
         local br = false
@@ -81,12 +112,29 @@ if SERVER then
                 if br then break end
             end
         end
+        
+        target:UpdateRole(ROLES.INFECTED.index)
     
         table.insert(INFECTED[attacker], target)
         
-        target:UpdateRole(ROLES.INFECTED.index)
+        target:StripWeapons()
+        
+        target:Give("weapon_ttt_tigers")
+        target:Give("ttt_perk_speed")
+        
+        local name = "sound_idle_" .. target:EntIndex()
+        
+        timer.Create(name, 10, 0, function() StartZombieIdle(target, name) end)
         
         SendFullStateUpdate()
+    end
+    
+    function StopZombieIdle(ply)
+        local str = "sound_idle_" .. ply:EntIndex()
+    
+        if timer.Exists(str) then
+            timer.Stop(str)
+        end
     end
     
     hook.Add("TTT2_SendFullStateUpdate", "InfFullStateUpdate", function()
@@ -114,6 +162,8 @@ if SERVER then
     hook.Add("TTTEndRound", "InfEndRound", function()
         for _, v in pairs(player.GetAll()) do
             v:SetMaxHealth(100) -- reset
+            
+            StopZombieIdle(v)
         end
         
         INFECTED = {}
@@ -136,7 +186,7 @@ if SERVER then
                 
                 AddInfected(target, attacker)
         
-                target:SetMaxHealth(50) -- just for new infected
+                target:SetMaxHealth(30) -- just for new infected
                 target:SetModel("models/player/corpse1.mdl") -- just for new infected
         
                 InitInfected(target)
@@ -196,6 +246,16 @@ if SERVER then
             INFECTED[tmpHost] = nil
         end
     end)
+    
+	hook.Add("PlayerCanPickupWeapon", "InfectedPickupWeapon", function(ply, wep)
+		if not IsValid(wep) or not IsValid(ply) then return end
+   
+   		if ply:IsSpec() then return false end
+
+   		if ply:GetRole() == ROLES.INFECTED.index and not INFECTED[ply] then
+			return false
+		end
+	end)
 else -- CLIENT
     net.Receive("TTT_InitInfected", function()
         InitInfected(LocalPlayer())
