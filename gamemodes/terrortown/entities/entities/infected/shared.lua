@@ -82,6 +82,8 @@ if SERVER then
         "npc/zombie/zombie_voice_idle13.wav",
         "npc/zombie/zombie_voice_idle14.wav"
     }
+    
+    local zombie_sound_idles_len = #zombie_sound_idles
 
     util.AddNetworkString("TTT_InitInfected")
 
@@ -90,9 +92,10 @@ if SERVER then
     function StartZombieIdle(target, name)
         if not target or not IsValid(target) or not target:IsPlayer() then 
             timer.Stop(name) 
+            timer.Remove(name) 
         end
         
-        target:EmitSound(table.Random(zombie_sound_idles))
+        target:EmitSound(zombie_sound_idles[math.random(zombie_sound_idles_len)], SNDLVL_90dB, 100, 1, CHAN_VOICE)
     end
     
     function AddInfected(target, attacker)
