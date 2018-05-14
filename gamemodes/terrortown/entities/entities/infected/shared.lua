@@ -90,12 +90,12 @@ if SERVER then
     INFECTED = {}
     
     function StartZombieIdle(target, name)
-        if not target or not IsValid(target) or not target:IsPlayer() then 
+        if not target or not IsValid(target) or not target:IsPlayer() or not target:IsActive() then 
             timer.Stop(name) 
             timer.Remove(name) 
+        else
+            target:EmitSound(zombie_sound_idles[math.random(zombie_sound_idles_len)], SNDLVL_90dB, 100, 1, CHAN_VOICE)
         end
-        
-        target:EmitSound(zombie_sound_idles[math.random(zombie_sound_idles_len)], SNDLVL_90dB, 100, 1, CHAN_VOICE)
     end
     
     function AddInfected(target, attacker)
@@ -129,7 +129,9 @@ if SERVER then
         
         local name = "sound_idle_" .. target:EntIndex()
         
-        timer.Create(name, 10, 0, function() StartZombieIdle(target, name) end)
+        timer.Create(name, 10, 0, function()
+            StartZombieIdle(target, name)
+        end)
         
         SendFullStateUpdate()
     end
