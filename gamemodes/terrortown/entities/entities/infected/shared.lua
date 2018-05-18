@@ -255,14 +255,17 @@ if SERVER then
     end)
     
 	hook.Add("PlayerCanPickupWeapon", "InfectedPickupWeapon", function(ply, wep)
-		if not IsValid(wep) or not IsValid(ply) then return end
-   
-   		if ply:IsSpec() then return false end
-
-   		if ply:GetRole() == ROLES.INFECTED.index and not INFECTED[ply] then
+		if IsValid(ply) and IsValid(wep) and ply:GetRole() == ROLES.INFECTED.index and not INFECTED[ply] then
 			return false
 		end
 	end)
+    
+    -- tttc support
+    hook.Add("TTTCClassDropNotPickupable", "InfectedPickupClassDrop", function(ply)
+        if IsValid(ply) and ply:GetRole() == ROLES.INFECTED.index and not INFECTED[ply] then
+			return true
+		end
+    end)
 else -- CLIENT
     net.Receive("TTT_InitInfected", function()
         InitInfected(LocalPlayer())
