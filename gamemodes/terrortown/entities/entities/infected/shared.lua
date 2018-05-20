@@ -46,6 +46,11 @@ hook.Add("TTT2_FinishedSync", "InfInitT", function(ply, first)
 		LANG.AddToLanguage("English", "search_role_" .. ROLES.INFECTED.abbr, "This person was a Infected!")
         LANG.AddToLanguage("English", "ev_win_" .. ROLES.INFECTED.abbr, "The ill Infected won the round!")
 		LANG.AddToLanguage("English", "target_" .. ROLES.INFECTED.name, "Infected")
+        LANG.AddToLanguage("English", "ttt2_desc_" .. ROLES.INFECTED.name, [[The Infected needs to infect every player to win. He will infect other players by killing them.
+If a player gets infected, the player looks like a zombie and is also able to infect other players. So you can build up a whole army.
+But there is one thing you need to get in mind: If the host (the main infected player with a normal model) will die or disconnect, each player that the host infected will die.
+
+If there is a Jester, feel free to infect him ;)]])
 	    
 	    ---------------------------------
 
@@ -58,6 +63,11 @@ hook.Add("TTT2_FinishedSync", "InfInitT", function(ply, first)
 		LANG.AddToLanguage("Deutsch", "search_role_" .. ROLES.INFECTED.abbr, "Diese Person war ein Infizierter!")
         LANG.AddToLanguage("Deutsch", "ev_win_" .. ROLES.INFECTED.abbr, "Der kranke Infizierte hat die Runde gewonnen!")
 		LANG.AddToLanguage("Deutsch", "target_" .. ROLES.INFECTED.name, "Infizierter")
+        LANG.AddToLanguage("Deutsch", "ttt2_desc_" .. ROLES.INFECTED.name, [[Der Infizierte muss alle anderen Spieler infizieren, um zu gewinnen. Dies tut er, indem er die Spieler tötet.
+Wenn ein Spieler infiziert wird, wird er wie ein Zombie aussehen und wird ebenfalls andere Spieler infizieren können. Also erbaue Deine Armee!
+Doch es gibt eine Sache, an die Du denken solltest: Stirbt/Disconnected der Host (der erste Infizierte mit dem normalen Playermodel), stirbt auch jeder Infizierte, der von ihm infiziert wurde.
+
+Falls es einen Jester gibt, zögere nicht und infiziere ihn ;)]])
     end
 end)
 
