@@ -1,6 +1,9 @@
-AddCSLuaFile()
+local infMat
+local indicator_inf_col
 
 if SERVER then
+	AddCSLuaFile()
+
     -- Bloody Knife
     resource.AddWorkshop("380972923")
     
@@ -9,6 +12,8 @@ if SERVER then
 
     resource.AddFile("materials/vgui/ttt/icon_inf.vmt")
     resource.AddFile("materials/vgui/ttt/sprite_inf.vmt")
+else
+	local indicator_inf_col = Color(255, 255, 255, 130)
 end
 
 -- important to add roles with this function,
@@ -35,6 +40,7 @@ AddCustomRole("INFECTED", { -- first param is access for ROLES array => ROLES.IN
 -- if sync of roles has finished
 hook.Add("TTT2_FinishedSync", "InfInitT", function(ply, first)
     if CLIENT and first then -- just on client and first init !
+        infMat = Material("vgui/ttt/sprite_" .. ROLES.INFECTED.abbr)
 
 		-- setup here is not necessary but if you want to access the role data, you need to start here
 		-- setup basic translation !
@@ -98,6 +104,23 @@ if SERVER then
     util.AddNetworkString("TTT_InitInfected")
 
     INFECTED = {}
+	
+	local plymeta = FindMetaTable("Player")
+	if not plymeta then return end
+	
+	function plymeta:GetInfHost()
+		if INFECTED[self] then 
+			return self 
+		end
+		
+		for host, infPly in pairs(INFECTED) do
+			if table.HasValue(infPly, self) then
+				return host
+			end
+		end
+		
+		return
+	end
     
     function StartZombieIdle(target, name)
         if not target or not IsValid(target) or not target:IsPlayer() or not target:IsActive() then 
@@ -109,33 +132,17 @@ if SERVER then
     end
     
     function AddInfected(target, attacker)
-        local br = false
-    
-        if not INFECTED[attacker] then
-            for k, v in pairs(INFECTED) do
-                for _, i in pairs(v) do
-                    if i == attacker then
-                        attacker = k
-                        br = true
-                        
-                        break
-                    end
-                end
-                
-                if br then break end
-            end
-        end
-        
         target:UpdateRole(ROLES.INFECTED.index)
     
-        if INFECTED[attacker] then
-            table.insert(INFECTED[attacker], target)
+		local host = attacker:GetInfHost()
+        if host then
+            table.insert(INFECTED[host], target)
         end
         
         target:StripWeapons()
         
         target:Give("weapon_ttt_tigers")
-        target:Give("ttt_perk_speed")
+        --target:Give("ttt_perk_speed") -- TODO buggy, replace
         
         local name = "sound_idle_" .. target:EntIndex()
         
@@ -156,22 +163,22 @@ if SERVER then
     
     hook.Add("TTT2_SendFullStateUpdate", "InfFullStateUpdate", function()
         for host, v in pairs(INFECTED) do
-            local tmp1 = {}
-            
             if IsValid(host) and host:IsPlayer() then 
+				local tmp = {}
+			
                 for _, inf in pairs(v) do
-                    table.insert(tmp1, inf:EntIndex())
-                    
+					table.insert(tmp, inf:EntIndex())
+				
                     SendRoleListMessage(ROLES.INFECTED.index, {host:EntIndex()}, inf)
                 end
                 
-                SendRoleListMessage(ROLES.INFECTED.index, tmp1, host)
+                SendRoleListMessage(ROLES.INFECTED.index, tmp, host)
             end
         end
     end)
     
     hook.Add("TTT2_RoleTypeSet", "UpdateInfRoleSelect", function(ply)
-		if ply:GetRole() == ROLES.INFECTED.index then
+		if ply:GetRole() == ROLES.INFECTED.index and not ply:GetInfHost() then
 			INFECTED[ply] = {}
 		end
 	end)
@@ -186,7 +193,7 @@ if SERVER then
         INFECTED = {}
     end)
     
-    hook.Add("TTTBeginRound", "InfBeginRound", function()
+    hook.Add("TTTPrepareRound", "InfBeginRound", function()
         INFECTED = {}
     end)
     
@@ -199,7 +206,9 @@ if SERVER then
                 
                 target:Freeze(true)
                 
-                timer.Create("FreezeNewInfForInit", 1, 1, function() target:Freeze(false) end)
+                timer.Create("FreezeNewInfForInit" .. target:EntIndex(), 1, 1, function() 
+					target:Freeze(false) 
+				end)
                 
                 AddInfected(target, attacker)
         
@@ -217,7 +226,6 @@ if SERVER then
     
     hook.Add("PlayerDeath", "InfPlayerDeath", function(victim, infl, attacker)
         local host = INFECTED[victim]
-        
         if host then
             for _, v in pairs(host) do
                 if v:IsActive() and v:GetRole() == ROLES.INFECTED.index then
@@ -230,42 +238,21 @@ if SERVER then
     end)
     
     hook.Add("PlayerDisconnected", "SikiPlyDisconnected", function(discPly)
-        local tmpHost
-        local tmpInf
-        
-        for k, v in pairs(INFECTED) do
-            if k == discPly then
-                tmpHost = k
-            end
-                
-            for i, ply in pairs(v) do
-                if ply == discPly then
-                    tmpInf = ply
-                
-                    table.remove(INFECTED[k], i)
-                    
-                    break
-                end
-            end
+        local host = discPly:GetInfHost()
             
-            if tmpHost or tmpInf then
-                break
-            end
-        end
-            
-        if tmpHost then
-            for _, inf in pairs(INFECTED[tmpHost]) do
+        if host == discPly then
+            for _, inf in pairs(INFECTED[host]) do
                 if inf:IsActive() and inf:GetRole() == ROLES.INFECTED.index then
                     inf:Kill()
                 end
             end
         
-            INFECTED[tmpHost] = nil
+            INFECTED[host] = nil
         end
     end)
     
 	hook.Add("PlayerCanPickupWeapon", "InfectedPickupWeapon", function(ply, wep)
-		if IsValid(ply) and IsValid(wep) and ply:GetRole() == ROLES.INFECTED.index and not INFECTED[ply] then
+		if IsValid(ply) and ply:GetRole() == ROLES.INFECTED.index and not INFECTED[ply] then
 			return false
 		end
 	end)
@@ -279,5 +266,40 @@ if SERVER then
 else -- CLIENT
     net.Receive("TTT_InitInfected", function()
         InitInfected(LocalPlayer())
+    end)
+    
+    hook.Add("PostDrawTranslucentRenderables", "PostDrawInfTransRend", function()
+        local client = LocalPlayer()
+		
+		if not client:IsActive() or client:GetRole() ~= ROLES.INFECTED.index then return end
+		
+		local dir, pos
+		
+		local trace = client:GetEyeTrace(MASK_SHOT)
+		local ent = trace.Entity
+
+		if not IsValid(ent) or ent.NoTarget or not ent:IsPlayer() then return end
+
+		dir = (client:GetForward() * -1)
+
+		pos = ent:GetPos()
+		pos.z = pos.z + 74
+
+		if ent ~= client then
+			if ent.GetRole and ent:IsActive() then
+				local role = ent:GetRole()
+				
+				if not role then return end -- sometimes strange things happens... -- gmod, u know
+				
+				if role <= 0 then
+					role = ROLES.INNOCENT.index
+				end
+				
+				if infMat then
+					render.SetMaterial(infMat)
+					render.DrawQuadEasy(pos, dir, 8, 8, indicator_inf_col, 180)
+				end
+			end
+		end
     end)
 end
