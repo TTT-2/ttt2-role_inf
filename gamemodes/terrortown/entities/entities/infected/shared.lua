@@ -16,26 +16,28 @@ else
 	local indicator_inf_col = Color(255, 255, 255, 130)
 end
 
--- important to add roles with this function,
--- because it does more than just access the array ! e.g. updating other arrays
-AddCustomRole("INFECTED", { -- first param is access for ROLES array => ROLES.INFECTED or ROLES["INFECTED"]
-	color = Color(34, 85, 0, 255), -- ...
-	dkcolor = Color(44, 85, 0, 255), -- ...
-	bgcolor = Color(24, 75, 0, 200), -- ...
-	name = "infected", -- just a unique name for the script to determine
-	printName = "Infected", -- The text that is printed to the player, e.g. in role alert
-	abbr = "inf", -- abbreviation
-	team = "infs", -- the team name: roles with same team name are working together
-	defaultEquipment = SPECIAL_EQUIPMENT, -- here you can set up your own default equipment 
-    surviveBonus = 0.2, -- bonus multiplier for every survive while another player was killed
-    scoreKillsMultiplier = 2, -- multiplier for kill of player of another team
-    scoreTeamKillsMultiplier = -4 -- multiplier for teamkill
-}, {
-    pct = 0.17, -- necessary: percentage of getting this role selected (per player)
-    maximum = 1, -- maximum amount of roles in a round
-    minPlayers = 6, -- minimum amount of players until this role is able to get selected
-    random = 10 -- randomness of getting this role selected in a round
-})
+hook.Add("Initialize", "TTT2InitCRoleInf", function()
+	-- important to add roles with this function,
+	-- because it does more than just access the array ! e.g. updating other arrays
+	AddCustomRole("INFECTED", { -- first param is access for ROLES array => ROLES.INFECTED or ROLES["INFECTED"]
+		color = Color(34, 85, 0, 255), -- ...
+		dkcolor = Color(44, 85, 0, 255), -- ...
+		bgcolor = Color(24, 75, 0, 200), -- ...
+		name = "infected", -- just a unique name for the script to determine
+		printName = "Infected", -- The text that is printed to the player, e.g. in role alert
+		abbr = "inf", -- abbreviation
+		team = "infs", -- the team name: roles with same team name are working together
+		defaultEquipment = SPECIAL_EQUIPMENT, -- here you can set up your own default equipment 
+		surviveBonus = 0.2, -- bonus multiplier for every survive while another player was killed
+		scoreKillsMultiplier = 2, -- multiplier for kill of player of another team
+		scoreTeamKillsMultiplier = -4 -- multiplier for teamkill
+	}, {
+		pct = 0.17, -- necessary: percentage of getting this role selected (per player)
+		maximum = 1, -- maximum amount of roles in a round
+		minPlayers = 6, -- minimum amount of players until this role is able to get selected
+		random = 10 -- randomness of getting this role selected in a round
+	})
+end)
 
 -- if sync of roles has finished
 hook.Add("TTT2_FinishedSync", "InfInitT", function(ply, first)
