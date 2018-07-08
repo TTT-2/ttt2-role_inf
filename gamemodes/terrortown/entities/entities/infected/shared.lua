@@ -24,7 +24,6 @@ hook.Add("Initialize", "TTT2InitCRoleInf", function()
 		dkcolor = Color(44, 85, 0, 255), -- ...
 		bgcolor = Color(24, 75, 0, 200), -- ...
 		name = "infected", -- just a unique name for the script to determine
-		printName = "Infected", -- The text that is printed to the player, e.g. in role alert
 		abbr = "inf", -- abbreviation
 		team = "infs", -- the team name: roles with same team name are working together
 		defaultEquipment = SPECIAL_EQUIPMENT, -- here you can set up your own default equipment 
