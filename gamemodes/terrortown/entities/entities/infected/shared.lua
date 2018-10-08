@@ -205,10 +205,10 @@ if target:IsPlayer() and target:GetRole() ~= ROLES.INFECTED.index and IsValid(at
 	if (target:Health() - dmginfo:GetDamage()) <= 0 then
 		dmginfo:ScaleDamage(0)
 
-		target:Freeze(true)
+		target:Lock()(true)
 
 		timer.Create("FreezeNewInfForInit" .. target:EntIndex(), 1, 5, function()
-			target:Freeze(false)
+			target:Lock(false)
 		end)
 
 		AddInfected(target, attacker)
