@@ -255,7 +255,7 @@ if SERVER then
 	end)
 
 	hook.Add("PlayerCanPickupWeapon", "InfectedPickupWeapon", function(ply, wep)
-		if IsValid(ply) and ply:GetRole() == ROLES.INFECTED.index and not INFECTED[ply] then
+		if IsValid(ply) ply:Alive() and ply:GetRole() == ROLES.INFECTED.index and not INFECTED[ply] then
 			return false
 		end
 	end)
