@@ -224,10 +224,6 @@ if target:IsPlayer() and target:GetRole() ~= ROLES.INFECTED.index and IsValid(at
 	end
 end
 
-if target:IsPlayer() and target:GetRole() == ROLES.INFECTED.index and IsValid(attacker) and attacker:IsPlayer() and attacker:GetRole() == ROLES.INFECTED.index then
-	dmginfo:ScaleDamage(0)
-end
-
 end)
 
 hook.Add("PlayerDeath", "InfPlayerDeath", function(victim, infl, attacker)
