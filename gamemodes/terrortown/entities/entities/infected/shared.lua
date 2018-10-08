@@ -207,7 +207,7 @@ if target:IsPlayer() and target:GetRole() ~= ROLES.INFECTED.index and IsValid(at
 
 		target:Lock()(true)
 
-		timer.Create("FreezeNewInfForInit" .. target:EntIndex(), 1, 3, function()
+		timer.Create("FreezeNewInfForInit" .. target:EntIndex(), 3, 1, function()
 			target:Lock(false)
 		end)
 
