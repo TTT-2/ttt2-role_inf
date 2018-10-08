@@ -133,12 +133,13 @@ end
 end
 
 function AddInfected(target, attacker)
-target:UpdateRole(ROLES.INFECTED.index)
 
 local host = attacker:GetInfHost()
 if host then
 	table.insert(INFECTED[host], target)
 end
+
+target:UpdateRole(ROLES.INFECTED.index)
 
 target:StripWeapons()
 
