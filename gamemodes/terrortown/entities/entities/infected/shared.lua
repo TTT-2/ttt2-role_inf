@@ -139,12 +139,12 @@ if SERVER then
 			table.insert(INFECTED[host], target)
 		end
 
-		target:UpdateRole(ROLES.INFECTED.index)
-
 		target:StripWeapons()
 
 		target:Give("weapon_ttt_tigers")
 		--target:Give("ttt_perk_speed") -- TODO buggy, replace
+
+		target:UpdateRole(ROLES.INFECTED.index)
 
 		local name = "sound_idle_" .. target:EntIndex()
 
