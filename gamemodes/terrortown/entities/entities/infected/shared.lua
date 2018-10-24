@@ -8,7 +8,7 @@ end
 -- creates global var "TEAM_INFECTED" and other required things
 -- TEAM_[name], data: e.g. icon, color, ...
 InitCustomTeam("INFECTED", {
-		icon = "vgui/ttt/icon_inf",
+		icon = "vgui/ttt/sprite_inf",
 		color = Color(34, 85, 0, 255)
 })
 
