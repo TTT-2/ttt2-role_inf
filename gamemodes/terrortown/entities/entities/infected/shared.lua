@@ -158,9 +158,13 @@ if SERVER then
 		end
 	end
 
-	hook.Add("TTT2RoleTypeSet", "UpdateInfRoleSelect", function(ply)
-		if ply:GetSubRole() == ROLE_INFECTED and not ply:GetInfHost() then
-			INFECTED[ply] = {}
+	hook.Add("TTT2UpdateSubrole", "UpdateInfRoleSelect", function(ply, oldSubrole, newSubrole)
+		if newSubrole == ROLE_INFECTED then
+			if not ply:GetInfHost() then
+				INFECTED[ply] = {}
+			end
+		elseif oldSubrole == ROLE_INFECTED then
+			INFECTED[ply] = nil
 		end
 	end)
 
@@ -190,8 +194,6 @@ if SERVER then
 					inf:Kill()
 				end
 			end
-
-			INFECTED[victim] = nil
 		end
 	end)
 
@@ -218,7 +220,7 @@ if SERVER then
 		end
 	end)
 
-	hook.Add("PlayerDisconnected", "SikiPlyDisconnected", function(discPly)
+	hook.Add("PlayerDisconnected", "InfPlyDisconnected", function(discPly)
 		local host = discPly:GetInfHost()
 
 		if host == discPly then
@@ -233,7 +235,7 @@ if SERVER then
 	end)
 
 	hook.Add("PlayerCanPickupWeapon", "InfectedPickupWeapon", function(ply, wep)
-		if IsValid(ply) and ply:IsActive() and ply:GetSubRole() == ROLE_INFECTED and not INFECTED[ply] then
+		if IsValid(ply) and ply:IsActive() and ply:GetSubRole() == ROLE_INFECTED and not INFECTED[ply] and not (not ply.IsGhost or ply.IsGhost and ply:IsGhost()) then
 			return false
 		end
 	end)
