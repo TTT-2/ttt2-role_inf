@@ -207,7 +207,7 @@ if SERVER then
 
 				-- revive after 3s
 				ply:Revive(3, function(p)
-					if IsValid(p) and IsValid(killer) and killer:IsActive() and killer:Alive() and killer:GetSubRole() == ROLE_INFECTED then
+					if IsValid(p) and IsValid(killer) and killer:IsActive() and killer:GetSubRole() == ROLE_INFECTED then
 						AddInfected(p, killer)
 						InitInfected(p)
 
