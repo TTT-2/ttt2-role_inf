@@ -16,8 +16,8 @@ InitCustomTeam("INFECTED", {
 -- because it does more than just access the array ! e.g. updating other arrays
 InitCustomRole("INFECTED", { -- first param is access for ROLES array => ROLES.INFECTED or ROLES["INFECTED"]
 		color = Color(34, 85, 0, 255), -- ...
-		dkcolor = Color(44, 85, 0, 255), -- ...
-		bgcolor = Color(24, 75, 0, 200), -- ...
+		dkcolor = Color(24, 61, 0, 255), -- ...
+		bgcolor = Color(31, 66, 7, 255), -- ...
 		name = "infected", -- just a unique name for the script to determine
 		abbr = "inf", -- abbreviation
 		defaultTeam = TEAM_INFECTED, -- the team name: roles with same team name are working together
@@ -32,9 +32,12 @@ InitCustomRole("INFECTED", { -- first param is access for ROLES array => ROLES.I
 		random = 10 -- randomness of getting this role selected in a round
 })
 
--- if sync of roles has finished
-hook.Add("TTT2FinishedLoading", "InfInitT", function()
-	if CLIENT then -- just on client!
+function InitInfected(ply)
+	ply:SetHealth(ply:GetMaxHealth())
+end
+
+if CLIENT then -- just on client!
+	hook.Add("TTT2FinishedLoading", "InfInitT", function() -- if sync of roles has finished
 		infMat = Material("vgui/ttt/sprite_" .. INFECTED.abbr)
 
 		-- setup here is not necessary but if you want to access the role data, you need to start here
@@ -69,14 +72,12 @@ Wenn ein Spieler infiziert wird, wird er wie ein Zombie aussehen und wird ebenfa
 Doch es gibt eine Sache, an die Du denken solltest: Stirbt/Disconnected der Host (der erste Infizierte mit dem normalen Playermodel), stirbt auch jeder Infizierte, der von ihm infiziert wurde.
 
 Falls es einen Jester gibt, zögere nicht und infiziere ihn ]])
-	end
-end)
+	end)
 
-function InitInfected(ply)
-	ply:SetHealth(ply:GetMaxHealth())
-end
-
-if SERVER then
+	net.Receive("TTTInitInfected", function()
+		InitInfected(LocalPlayer())
+	end)
+else -- SERVER
 	zombie_sound_idles = {
 		"npc/zombie/zombie_voice_idle1.wav",
 		"npc/zombie/zombie_voice_idle2.wav",
@@ -113,8 +114,6 @@ if SERVER then
 				return host
 			end
 		end
-
-		return
 	end
 
 	function StartZombieIdle(target, name)
@@ -207,14 +206,15 @@ if SERVER then
 
 				-- revive after 3s
 				ply:Revive(3, function(p)
-					if IsValid(p) and IsValid(killer) and killer:IsActive() and killer:GetSubRole() == ROLE_INFECTED then
-						AddInfected(p, killer)
-						InitInfected(p)
+					AddInfected(p, killer)
+					InitInfected(p)
 
-						-- do this clientside as well
-						net.Start("TTTInitInfected")
-						net.Send(p)
-					end
+					-- do this clientside as well
+					net.Start("TTTInitInfected")
+					net.Send(p)
+				end,
+				function(p)
+					return IsValid(p) and IsValid(killer) and killer:IsActive() and killer:GetSubRole() == ROLE_INFECTED
 				end)
 			end
 		end
@@ -245,9 +245,5 @@ if SERVER then
 		if IsValid(ply) and ply:IsActive() and ply:GetSubRole() == ROLE_INFECTED and not INFECTED[ply] then
 			return true
 		end
-	end)
-else -- CLIENT
-	net.Receive("TTTInitInfected", function()
-		InitInfected(LocalPlayer())
 	end)
 end
