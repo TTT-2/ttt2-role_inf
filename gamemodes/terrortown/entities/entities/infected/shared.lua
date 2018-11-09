@@ -235,7 +235,7 @@ else -- SERVER
 	end)
 
 	hook.Add("PlayerCanPickupWeapon", "InfectedPickupWeapon", function(ply, wep)
-		if IsValid(ply) and ply:IsActive() and ply:GetSubRole() == ROLE_INFECTED and not INFECTED[ply] and not (not ply.IsGhost or ply.IsGhost and ply:IsGhost()) then
+		if IsValid(ply) and ply:IsActive() and ply:GetSubRole() == ROLE_INFECTED and not INFECTED[ply] and (not ply.IsGhost or ply.IsGhost and not ply:IsGhost()) then
 			return false
 		end
 	end)
