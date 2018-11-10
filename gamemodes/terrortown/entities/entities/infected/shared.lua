@@ -133,7 +133,7 @@ else -- SERVER
 
 		target:StripWeapons()
 
-		target:Give("weapon_ttt_tigers")
+		target:Give("weapon_inf_knife")
 
 		target:UpdateRole(ROLE_INFECTED)
 
