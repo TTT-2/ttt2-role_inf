@@ -18,7 +18,6 @@ InitCustomRole("INFECTED", { -- first param is access for ROLES array => ROLES.I
 		color = Color(34, 85, 0, 255), -- ...
 		dkcolor = Color(10, 26, 0, 255), -- ...
 		bgcolor = Color(88, 0, 22, 255), -- ...
-		name = "infected", -- just a unique name for the script to determine
 		abbr = "inf", -- abbreviation
 		defaultTeam = TEAM_INFECTED, -- the team name: roles with same team name are working together
 		defaultEquipment = SPECIAL_EQUIPMENT, -- here you can set up your own default equipment
@@ -43,6 +42,7 @@ if CLIENT then -- just on client!
 		-- setup here is not necessary but if you want to access the role data, you need to start here
 		-- setup basic translation !
 		LANG.AddToLanguage("English", INFECTED.name, "Infected")
+		LANG.AddToLanguage("English", TEAM_INFECTED, "TEAM Infecteds")
 		LANG.AddToLanguage("English", "hilite_win_" .. TEAM_INFECTED, "THE INF WON") -- name of base role of a team -> maybe access with GetTeamRoles(ROLES.INFECTED.team)[1].name
 		LANG.AddToLanguage("English", "win_" .. TEAM_INFECTED, "The Infected has won!") -- teamname
 		LANG.AddToLanguage("English", "info_popup_" .. INFECTED.name, [[Now its your turn! Infect them ALL.]])
@@ -60,6 +60,7 @@ If there is a Jester, feel free to infect him ]])
 
 		-- maybe this language as well...
 		LANG.AddToLanguage("Deutsch", INFECTED.name, "Infizierter")
+		LANG.AddToLanguage("Deutsch", TEAM_INFECTED, "TEAM Infizierte")
 		LANG.AddToLanguage("Deutsch", "hilite_win_" .. TEAM_INFECTED, "THE INF WON")
 		LANG.AddToLanguage("Deutsch", "win_" .. TEAM_INFECTED, "Der Infizierte hat gewonnen!")
 		LANG.AddToLanguage("Deutsch", "info_popup_" .. INFECTED.name, [[Jetzt bist du dran! Infiziere sie ALLE...]])
