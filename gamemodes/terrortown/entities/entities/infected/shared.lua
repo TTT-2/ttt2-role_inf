@@ -133,10 +133,8 @@ else -- SERVER
 		end
 
 		target:StripWeapons()
-
 		target:Give("weapon_inf_knife")
-
-		target:UpdateRole(ROLE_INFECTED)
+		target:SetRole(ROLE_INFECTED)
 
 		local name = "sound_idle_" .. target:EntIndex()
 

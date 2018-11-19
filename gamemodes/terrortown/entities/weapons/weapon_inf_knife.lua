@@ -199,33 +199,6 @@ function SWEP:StabKill(tr, spos, sdest)
 	-- the ragdoll in here...
 end
 
-function SWEP:SecondaryAttack()
-	self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
-
-	if not IsFirstTimePredicted() then return end
-
-	if self.Owner:KeyDown(IN_SPEED) then return end
-
-	self:SetNextPrimaryFire(CurTime() + 1)
-
-	if CLIENT then return end
-
-	local Bom = ents.Create("tot_smokenade")
-
-	if Bom then
-		Bom.HmcdSpawned = self.HmcdSpawned
-		Bom:SetPos(self.Owner:GetShootPos() + self.Owner:GetAimVector() * 20)
-
-		Bom:Spawn()
-		Bom:Activate()
-
-		Bom:GetPhysicsObject():SetVelocity(self.Owner:GetVelocity() + self.Owner:GetAimVector() * 300)
-	end
-
-	sound.Play("snd_jack_hmcd_match.wav", self:GetPos(), 65, math.random(90, 110))
-	sound.Play("weapons/slam/throw.wav", self:GetPos(), 65, math.random(90, 110))
-end
-
 function SWEP:OnDrop()
 	self:Remove()
 end
