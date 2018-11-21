@@ -266,4 +266,10 @@ else -- SERVER
 			end
 		end
 	end)
+
+	hook.Add("TTT2InfInitNewHost", "TTT2AddInfDefWeapons", function(ply)
+		ply:Give("weapon_zm_improvised")
+		ply:Give("weapon_zm_carry")
+		ply:Give("weapon_ttt_unarmed")
+	end)
 end
