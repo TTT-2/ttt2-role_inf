@@ -158,6 +158,8 @@ else -- SERVER
 		if newSubrole == ROLE_INFECTED then
 			if not ply:GetInfHost() then
 				INFECTED[ply] = {}
+
+				hook.Run("TTT2InfInitNewHost", ply)
 			end
 		elseif oldSubrole == ROLE_INFECTED then
 			INFECTED[ply] = nil
