@@ -132,8 +132,6 @@ else -- SERVER
 			table.insert(INFECTED[host], target)
 		end
 
-		target:StripWeapons()
-		target:Give("weapon_inf_knife")
 		target:SetRole(ROLE_INFECTED)
 
 		local name = "sound_idle_" .. target:EntIndex()
@@ -201,7 +199,7 @@ else -- SERVER
 
 			ply.infectedKiller = nil
 
-			if IsValid(killer) then
+			if IsValid(killer) and killer:IsActive() and killer:GetSubRole() == ROLE_INFECTED then
 
 				-- revive after 3s
 				ply:Revive(3, function(p)
@@ -243,6 +241,27 @@ else -- SERVER
 	hook.Add("TTTCClassDropNotPickupable", "InfectedPickupClassDrop", function(ply)
 		if IsValid(ply) and ply:IsActive() and ply:GetSubRole() == ROLE_INFECTED and not INFECTED[ply] then
 			return true
+		end
+	end)
+
+	-- default loadout is used if the player spawns
+	hook.Add("TTT2ModifyDefaultLoadout", "ModifyInfLoadout", function(loadout_weapons, subrole)
+		if subrole == ROLE_INFECTED then
+			for k, v in ipairs(loadout_weapons[subrole]) do
+				if v == "weapon_zm_improvised" or v == "weapon_zm_carry" or v == "weapon_ttt_unarmed" then
+					table.remove(loadout_weapons[subrole], k)
+
+					local tbl = weapons.GetStored(v)
+
+					if tbl and tbl.InLoadoutFor then
+						for k2, sr in ipairs(tbl.InLoadoutFor) do
+							if sr == subrole then
+								table.remove(tbl.InLoadoutFor, k2)
+							end
+						end
+					end
+				end
+			end
 		end
 	end)
 end
