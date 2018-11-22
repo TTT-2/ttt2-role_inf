@@ -132,6 +132,7 @@ else -- SERVER
 			table.insert(INFECTED[host], target)
 		end
 
+		target:StripWeapons()
 		target:SetRole(ROLE_INFECTED)
 
 		local name = "sound_idle_" .. target:EntIndex()
@@ -162,7 +163,29 @@ else -- SERVER
 				hook.Run("TTT2InfInitNewHost", ply)
 			end
 		elseif oldSubrole == ROLE_INFECTED then
+			if INFECTED[ply] then
+				for _, inf in ipairs(INFECTED[ply]) do
+					if IsValid(inf) and inf:IsActive() and inf:GetSubRole() == ROLE_INFECTED then
+						inf:Kill()
+					end
+				end
+			end
+
 			INFECTED[ply] = nil
+		end
+	end)
+
+	hook.Add("PlayerCanPickupWeapon", "InfModifyPickupWeapon", function(ply, wep)
+		if not IsValid(wep) or not IsValid(ply) or ply:IsSpec() then
+			return false
+		end
+
+		if ply:GetSubRole() == ROLE_INFECTED then
+			local wepClass = WEPS.GetClass(wep)
+
+			if not INFECTED[ply] and wepClass ~= "weapon_inf_knife" then
+				return false
+			end
 		end
 	end)
 
@@ -224,18 +247,12 @@ else -- SERVER
 
 		if host == discPly then
 			for _, inf in pairs(INFECTED[host]) do
-				if inf:IsActive() and inf:GetSubRole() == ROLE_INFECTED then
+				if IsValid(inf) and inf:IsActive() and inf:GetSubRole() == ROLE_INFECTED then
 					inf:Kill()
 				end
 			end
 
 			INFECTED[host] = nil
-		end
-	end)
-
-	hook.Add("PlayerCanPickupWeapon", "InfectedPickupWeapon", function(ply, wep)
-		if IsValid(ply) and ply:IsActive() and ply:GetSubRole() == ROLE_INFECTED and not INFECTED[ply] and (not ply.IsGhost or ply.IsGhost and not ply:IsGhost()) then
-			return false
 		end
 	end)
 

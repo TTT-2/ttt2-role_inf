@@ -41,6 +41,7 @@ SWEP.Secondary.Delay = 12
 SWEP.Kind = WEAPON_MELEE
 SWEP.WeaponID = AMMO_CROWBAR
 
+SWEP.AllowDrop = false
 SWEP.IsSilent = true
 
 -- Pull out faster than standard guns
