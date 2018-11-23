@@ -176,11 +176,11 @@ else -- SERVER
 	end)
 
 	hook.Add("PlayerCanPickupWeapon", "InfModifyPickupWeapon", function(ply, wep)
-		if not IsValid(wep) or not IsValid(ply) or ply:IsSpec() then
-			return false
-		end
+		if not IsValid(wep) or not IsValid(ply) then return end
 
 		if ply:GetSubRole() == ROLE_INFECTED then
+			if ply:IsSpec() and ply.IsGhost and ply:IsGhost() then return end
+
 			local wepClass = WEPS.GetClass(wep)
 
 			if not INFECTED[ply] and wepClass ~= "weapon_inf_knife" then

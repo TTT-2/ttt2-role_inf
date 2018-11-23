@@ -64,21 +64,23 @@ end
 function SWEP:PrimaryAttack()
 	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 
-	if not IsValid(self:GetOwner()) then return end
+	local owner = self.Owner
 
-	self:GetOwner():LagCompensation(true)
+	if not IsValid(owner) then return end
 
-	local spos = self:GetOwner():GetShootPos()
-	local sdest = spos + self:GetOwner():GetAimVector() * 70
+	owner:LagCompensation(true)
+
+	local spos = owner:GetShootPos()
+	local sdest = spos + owner:GetAimVector() * 70
 
 	local kmins = Vector(1, 1, 1) * -10
 	local kmaxs = Vector(1, 1, 1) * 10
 
-	local tr = util.TraceHull({start = spos, endpos = sdest, filter = self:GetOwner(), mask = MASK_SHOT_HULL, mins = kmins, maxs = kmaxs})
+	local tr = util.TraceHull({start = spos, endpos = sdest, filter = owner, mask = MASK_SHOT_HULL, mins = kmins, maxs = kmaxs})
 
 	-- Hull might hit environment stuff that line does not hit
 	if not IsValid(tr.Entity) then
-		tr = util.TraceLine({start = spos, endpos = sdest, filter = self:GetOwner(), mask = MASK_SHOT_HULL})
+		tr = util.TraceLine({start = spos, endpos = sdest, filter = owner, mask = MASK_SHOT_HULL})
 	end
 
 	local hitEnt = tr.Entity
@@ -94,7 +96,7 @@ function SWEP:PrimaryAttack()
 		edata:SetEntity(hitEnt)
 
 		if hitEnt:IsPlayer() or hitEnt:GetClass() == "prop_ragdoll" then
-			self:GetOwner():SetAnimation(PLAYER_ATTACK1)
+			owner:SetAnimation(PLAYER_ATTACK1)
 
 			self:SendWeaponAnim(ACT_VM_MISSCENTER)
 
@@ -105,9 +107,8 @@ function SWEP:PrimaryAttack()
 	end
 
 	if SERVER then
-		self:GetOwner():SetAnimation(PLAYER_ATTACK1)
+		owner:SetAnimation(PLAYER_ATTACK1)
 	end
-
 
 	if SERVER and tr.Hit and tr.HitNonWorld and IsValid(hitEnt) and hitEnt:IsPlayer() then
 		-- knife damage is never karma'd, so don't need to take that into
@@ -119,17 +120,17 @@ function SWEP:PrimaryAttack()
 		else
 			local dmg = DamageInfo()
 			dmg:SetDamage(self.Primary.Damage)
-			dmg:SetAttacker(self:GetOwner())
+			dmg:SetAttacker(owner)
 			dmg:SetInflictor(self)
-			dmg:SetDamageForce(self:GetOwner():GetAimVector() * 5)
-			dmg:SetDamagePosition(self:GetOwner():GetPos())
+			dmg:SetDamageForce(owner:GetAimVector() * 5)
+			dmg:SetDamagePosition(owner:GetPos())
 			dmg:SetDamageType(DMG_SLASH)
 
-			hitEnt:DispatchTraceAttack(dmg, spos + (self:GetOwner():GetAimVector() * 3), sdest)
+			hitEnt:DispatchTraceAttack(dmg, spos + (owner:GetAimVector() * 3), sdest)
 		end
 	end
 
-	self:GetOwner():LagCompensation(false)
+	owner:LagCompensation(false)
 end
 
 function SWEP:StabKill(tr, spos, sdest)
@@ -137,10 +138,10 @@ function SWEP:StabKill(tr, spos, sdest)
 
 	local dmg = DamageInfo()
 	dmg:SetDamage(2000)
-	dmg:SetAttacker(self:GetOwner())
+	dmg:SetAttacker(self.Owner)
 	dmg:SetInflictor(self)
-	dmg:SetDamageForce(self:GetOwner():GetAimVector())
-	dmg:SetDamagePosition(self:GetOwner():GetPos())
+	dmg:SetDamageForce(self.Owner:GetAimVector())
+	dmg:SetDamagePosition(self.Owner:GetPos())
 	dmg:SetDamageType(DMG_SLASH)
 
 	-- now that we use a hull trace, our hitpos is guaranteed to be
@@ -148,13 +149,13 @@ function SWEP:StabKill(tr, spos, sdest)
 	-- hope our effect_fn trace has more luck
 
 	-- first a straight up line trace to see if we aimed nicely
-	local retr = util.TraceLine({start = spos, endpos = sdest, filter = self:GetOwner(), mask = MASK_SHOT_HULL})
+	local retr = util.TraceLine({start = spos, endpos = sdest, filter = self.Owner, mask = MASK_SHOT_HULL})
 
 	-- if that fails, just trace to worldcenter so we have SOMETHING
 	if retr.Entity ~= target then
 		local center = target:LocalToWorld(target:OBBCenter())
 
-		retr = util.TraceLine({start = spos, endpos = center, filter = self:GetOwner(), mask = MASK_SHOT_HULL})
+		retr = util.TraceLine({start = spos, endpos = center, filter = self.Owner, mask = MASK_SHOT_HULL})
 	end
 
 	-- create knife effect creation fn
@@ -167,7 +168,7 @@ function SWEP:StabKill(tr, spos, sdest)
 
 	pos = pos - (ang:Forward() * 7)
 
-	local ignore = self:GetOwner()
+	local ignore = self.Owner
 
 	target.effect_fn = function(rag)
 		-- we might find a better location
@@ -208,7 +209,7 @@ function SWEP:StabKill(tr, spos, sdest)
 	end
 
 	-- seems the spos and sdest are purely for effects/forces?
-	target:DispatchTraceAttack(dmg, spos + (self:GetOwner():GetAimVector() * 3), sdest)
+	target:DispatchTraceAttack(dmg, spos + (self.Owner:GetAimVector() * 3), sdest)
 
 	-- target appears to die right there, so we could theoretically get to
 	-- the ragdoll in here...
