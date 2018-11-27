@@ -5,6 +5,14 @@ if SERVER then
 	resource.AddFile("materials/vgui/ttt/sprite_inf.vmt")
 end
 
+local maxhealth = CreateConVar("ttt2_inf_maxhealth_new_inf", 30, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
+
+hook.Add("TTTUlxDynamicRCVars", "TTTUlxDynamicInfCVars", function(tbl)
+	tbl[ROLE_INFECTED] = tbl[ROLE_INFECTED] or {}
+
+	table.insert(tbl[ROLE_INFECTED], {cvar = "ttt2_inf_maxhealth_new_inf", slider = true, min = 10, max = 100, desc = "Max Health for all new Infected (Def. 30)"})
+end)
+
 -- creates global var "TEAM_INFECTED" and other required things
 -- TEAM_[name], data: e.g. icon, color, ...
 InitCustomTeam("INFECTED", {
@@ -141,7 +149,7 @@ else -- SERVER
 			StartZombieIdle(target, name)
 		end)
 
-		target:SetMaxHealth(30) -- just for new infected
+		target:SetMaxHealth(maxhealth:GetInt()) -- just for new infected
 		target:SetModel("models/player/corpse1.mdl") -- just for new infected
 
 		SendFullStateUpdate()
