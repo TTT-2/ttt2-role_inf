@@ -1,8 +1,7 @@
 if SERVER then
 	AddCSLuaFile()
 
-	resource.AddFile("materials/vgui/ttt/icon_inf.vmt")
-	resource.AddFile("materials/vgui/ttt/sprite_inf.vmt")
+	resource.AddFile("materials/vgui/ttt/dynamic/roles/icon_inf.vmt")
 end
 
 local maxhealth = CreateConVar("ttt2_inf_maxhealth_new_inf", 30, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
@@ -16,16 +15,16 @@ end)
 -- creates global var "TEAM_INFECTED" and other required things
 -- TEAM_[name], data: e.g. icon, color, ...
 InitCustomTeam("INFECTED", {
-		icon = "vgui/ttt/sprite_inf",
-		color = Color(34, 85, 0, 255)
+		icon = "vgui/ttt/dynamic/roles/icon_inf",
+		color = Color(131, 55, 85, 255)
 })
 
 -- important to add roles with this function,
 -- because it does more than just access the array ! e.g. updating other arrays
 InitCustomRole("INFECTED", { -- first param is access for ROLES array => ROLES.INFECTED or ROLES["INFECTED"]
-		color = Color(34, 85, 0, 255), -- ...
-		dkcolor = Color(10, 26, 0, 255), -- ...
-		bgcolor = Color(88, 0, 22, 255), -- ...
+		color = Color(131, 55, 85, 255), -- ...
+		dkcolor = Color(73, 8, 33, 255), -- ...
+		bgcolor = Color(100, 137, 58, 255), -- ...
 		abbr = "inf", -- abbreviation
 		defaultTeam = TEAM_INFECTED, -- the team name: roles with same team name are working together
 		defaultEquipment = SPECIAL_EQUIPMENT, -- here you can set up your own default equipment
