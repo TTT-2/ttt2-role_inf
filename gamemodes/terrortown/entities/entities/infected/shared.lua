@@ -140,7 +140,6 @@ else -- SERVER
 		end
 
 		target:StripWeapons()
-		target:SetSubRoleModel("models/player/corpse1.mdl")
 		target:SetRole(ROLE_INFECTED)
 
 		local name = "sound_idle_" .. target:EntIndex()
@@ -176,6 +175,8 @@ else -- SERVER
 				INFECTED[ply] = {}
 
 				hook.Run("TTT2InfInitNewHost", ply)
+			else
+				ply:SetSubRoleModel("models/player/corpse1.mdl")
 			end
 		elseif oldSubrole == ROLE_INFECTED then
 			if INFECTED[ply] then
