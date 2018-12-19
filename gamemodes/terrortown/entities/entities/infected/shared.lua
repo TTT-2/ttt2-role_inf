@@ -149,7 +149,6 @@ else -- SERVER
 		end)
 
 		target:SetMaxHealth(maxhealth:GetInt()) -- just for new infected
-		target:SetModel("models/player/corpse1.mdl") -- just for new infected
 
 		SendFullStateUpdate()
 	end
@@ -176,6 +175,8 @@ else -- SERVER
 				INFECTED[ply] = {}
 
 				hook.Run("TTT2InfInitNewHost", ply)
+			else
+				ply:SetSubRoleModel("models/player/corpse1.mdl")
 			end
 		elseif oldSubrole == ROLE_INFECTED then
 			if INFECTED[ply] then
@@ -184,6 +185,8 @@ else -- SERVER
 						inf:Kill()
 					end
 				end
+			else
+				ply:SetSubRoleModel(nil)
 			end
 
 			INFECTED[ply] = nil
