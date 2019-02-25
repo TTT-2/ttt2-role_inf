@@ -171,6 +171,8 @@ function SWEP:StabKill(tr, spos, sdest)
 	local ignore = self.Owner
 
 	target.effect_fn = function(rag)
+		if not rag then return end
+
 		-- we might find a better location
 		local rtr = util.TraceLine({start = pos, endpos = pos + norm * 40, filter = ignore, mask = MASK_SHOT_HULL})
 
@@ -204,7 +206,9 @@ function SWEP:StabKill(tr, spos, sdest)
 
 		-- need to close over knife in order to keep a valid ref to it
 		rag:CallOnRemove("ttt_knife_cleanup", function()
-			SafeRemoveEntity(knife)
+			if IsValid(knife) then
+				SafeRemoveEntity(knife)
+			end
 		end)
 	end
 
