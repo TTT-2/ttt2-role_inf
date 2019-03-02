@@ -14,29 +14,27 @@ end)
 
 -- creates global var "TEAM_INFECTED" and other required things
 -- TEAM_[name], data: e.g. icon, color, ...
-InitCustomTeam("INFECTED", {
+roles.InitCustomTeam(ROLE.name, { -- this creates the var "TEAM_INFECTED"
 		icon = "vgui/ttt/dynamic/roles/icon_inf",
 		color = Color(131, 55, 85, 255)
 })
 
--- important to add roles with this function,
--- because it does more than just access the array ! e.g. updating other arrays
-InitCustomRole("INFECTED", { -- first param is access for ROLES array => ROLES.INFECTED or ROLES["INFECTED"]
-		color = Color(131, 55, 85, 255), -- ...
-		dkcolor = Color(73, 8, 33, 255), -- ...
-		bgcolor = Color(100, 137, 58, 255), -- ...
-		abbr = "inf", -- abbreviation
-		defaultTeam = TEAM_INFECTED, -- the team name: roles with same team name are working together
-		defaultEquipment = SPECIAL_EQUIPMENT, -- here you can set up your own default equipment
-		surviveBonus = 0.2, -- bonus multiplier for every survive while another player was killed
-		scoreKillsMultiplier = 2, -- multiplier for kill of player of another team
-		scoreTeamKillsMultiplier = -4 -- multiplier for teamkill
-	}, {
-		pct = 0.17, -- necessary: percentage of getting this role selected (per player)
-		maximum = 1, -- maximum amount of roles in a round
-		minPlayers = 6, -- minimum amount of players until this role is able to get selected
-		random = 10 -- randomness of getting this role selected in a round
-})
+ROLE.color = Color(131, 55, 85, 255) -- ...
+ROLE.dkcolor = Color(73, 8, 33, 255) -- ...
+ROLE.bgcolor = Color(100, 137, 58, 255) -- ...
+ROLE.abbr = "inf" -- abbreviation
+ROLE.defaultTeam = TEAM_INFECTED -- the team name: roles with same team name are working together
+ROLE.defaultEquipment = SPECIAL_EQUIPMENT -- here you can set up your own default equipment
+ROLE.surviveBonus = 0.2 -- bonus multiplier for every survive while another player was killed
+ROLE.scoreKillsMultiplier = 2 -- multiplier for kill of player of another team
+ROLE.scoreTeamKillsMultiplier = -4 -- multiplier for teamkill
+
+ROLE.conVarData = {
+	pct = 0.17, -- necessary: percentage of getting this role selected (per player)
+	maximum = 1, -- maximum amount of roles in a round
+	minPlayers = 6, -- minimum amount of players until this role is able to get selected
+	random = 10 -- randomness of getting this role selected in a round
+}
 
 function InitInfected(ply)
 	ply:SetHealth(ply:GetMaxHealth())
