@@ -105,17 +105,17 @@ else -- SERVER
 
 	util.AddNetworkString("TTTInitInfected")
 
-	INFECTED = {}
+	INFECTEDS = {}
 
 	local plymeta = FindMetaTable("Player")
 	if not plymeta then return end
 
 	function plymeta:GetInfHost()
-		if INFECTED[self] then
+		if INFECTEDS[self] then
 			return self
 		end
 
-		for host, infPly in pairs(INFECTED) do
+		for host, infPly in pairs(INFECTEDS) do
 			if table.HasValue(infPly, self) then
 				return host
 			end
@@ -150,7 +150,7 @@ else -- SERVER
 	function AddInfected(target, attacker)
 		local host = attacker:GetInfHost()
 		if host then
-			table.insert(INFECTED[host], target)
+			table.insert(INFECTEDS[host], target)
 		end
 
 		target:StripWeapons()
@@ -187,15 +187,15 @@ else -- SERVER
 	hook.Add("TTT2UpdateSubrole", "UpdateInfRoleSelect", function(ply, oldSubrole, newSubrole)
 		if newSubrole == ROLE_INFECTED then
 			if not ply:GetInfHost() then
-				INFECTED[ply] = {}
+				INFECTEDS[ply] = {}
 
 				hook.Run("TTT2InfInitNewHost", ply)
 			else
 				ply:SetSubRoleModel("models/player/corpse1.mdl")
 			end
 		elseif oldSubrole == ROLE_INFECTED then
-			if INFECTED[ply] then
-				for _, inf in ipairs(INFECTED[ply]) do
+			if INFECTEDS[ply] then
+				for _, inf in ipairs(INFECTEDS[ply]) do
 					if IsValid(inf) and inf:IsActive() and inf:GetSubRole() == ROLE_INFECTED then
 						inf:Kill()
 					end
@@ -204,7 +204,7 @@ else -- SERVER
 				ply:SetSubRoleModel(nil)
 			end
 
-			INFECTED[ply] = nil
+			INFECTEDS[ply] = nil
 		end
 	end)
 
@@ -216,7 +216,7 @@ else -- SERVER
 
 			local wepClass = WEPS.GetClass(wep)
 
-			if not INFECTED[ply] and wepClass ~= "weapon_inf_knife" then
+			if not INFECTEDS[ply] and wepClass ~= "weapon_inf_knife" then
 				return false
 			end
 		end
@@ -229,11 +229,11 @@ else -- SERVER
 			StopZombieIdle(v)
 		end
 
-		INFECTED = {}
+		INFECTEDS = {}
 	end)
 
 	hook.Add("TTTPrepareRound", "InfBeginRound", function()
-		INFECTED = {}
+		INFECTEDS = {}
 	end)
 
 	hook.Add("PlayerDeath", "InfectedDeath", function(victim, infl, attacker)
@@ -241,7 +241,7 @@ else -- SERVER
 			victim.infectedKiller = attacker
 		end
 
-		local hostTbl = INFECTED[victim]
+		local hostTbl = INFECTEDS[victim]
 		if hostTbl then
 			for _, inf in ipairs(hostTbl) do
 				if IsValid(inf) and inf:IsActive() and inf:GetSubRole() == ROLE_INFECTED then
@@ -279,19 +279,19 @@ else -- SERVER
 		local host = discPly:GetInfHost()
 
 		if host == discPly then
-			for _, inf in pairs(INFECTED[host]) do
+			for _, inf in pairs(INFECTEDS[host]) do
 				if IsValid(inf) and inf:IsActive() and inf:GetSubRole() == ROLE_INFECTED then
 					inf:Kill()
 				end
 			end
 
-			INFECTED[host] = nil
+			INFECTEDS[host] = nil
 		end
 	end)
 
 	-- tttc support
 	hook.Add("TTTCClassDropNotPickupable", "InfectedPickupClassDrop", function(ply)
-		if IsValid(ply) and ply:IsActive() and ply:GetSubRole() == ROLE_INFECTED and not INFECTED[ply] then
+		if IsValid(ply) and ply:IsActive() and ply:GetSubRole() == ROLE_INFECTED and not INFECTEDS[ply] then
 			return true
 		end
 	end)
