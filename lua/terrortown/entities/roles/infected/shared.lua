@@ -158,7 +158,9 @@ else -- SERVER
 
 		local name = "sound_idle_" .. target:EntIndex()
 
-		StartZombieIdle(target, name, 10)
+		timer.Create(name, 10, 1, function()
+			StartZombieIdle(target, name)
+		end)
 
 		target:SetMaxHealth(maxhealth:GetInt()) -- just for new infected
 
