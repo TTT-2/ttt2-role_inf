@@ -156,6 +156,7 @@ else -- SERVER
 
 		if timer.Exists(str) then
 			timer.Stop(str)
+			timer.Remove(str)
 		end
 	end
 
