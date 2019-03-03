@@ -122,13 +122,29 @@ else -- SERVER
 		end
 	end
 
-	function StartZombieIdle(target, name)
-		if not target or not IsValid(target) or not target:IsPlayer() or not target:IsActive() or target:GetSubRole() ~= ROLE_INFECTED then
+	local minDelay, maxDelay = 5, 25
+
+	local function CanIdle(ply)
+		return ply and IsValid(ply) and ply:IsPlayer() and ply:IsActive() and ply:GetSubRole() == ROLE_INFECTED and (not ply.IsGhost or not ply:IsGhost())
+	end
+
+	function StartZombieIdle(target, name, startDelay)
+		startDelay = startDelay or 0
+
+		if timer.Exists(name) then
 			timer.Stop(name)
 			timer.Remove(name)
-		else
-			target:EmitSound(zombie_sound_idles[math.random(zombie_sound_idles_len)], SNDLVL_90dB, 100, 1, CHAN_VOICE)
 		end
+
+		if not CanIdle(target) then return end
+
+		timer.Create(name, math.random(minDelay, maxDelay) + startDelay, 1, function()
+			if CanIdle(target) then
+				target:EmitSound(zombie_sound_idles[math.random(zombie_sound_idles_len)], SNDLVL_90dB, 100, 1, CHAN_VOICE)
+
+				StartZombieIdle(target, name)
+			end
+		end)
 	end
 
 	function AddInfected(target, attacker)
@@ -142,9 +158,7 @@ else -- SERVER
 
 		local name = "sound_idle_" .. target:EntIndex()
 
-		timer.Create(name, 10, 0, function()
-			StartZombieIdle(target, name)
-		end)
+		StartZombieIdle(target, name, 10)
 
 		target:SetMaxHealth(maxhealth:GetInt()) -- just for new infected
 
