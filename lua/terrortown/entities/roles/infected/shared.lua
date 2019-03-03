@@ -123,7 +123,7 @@ else -- SERVER
 	end
 
 	function StartZombieIdle(target, name)
-		if not target or not IsValid(target) or not target:IsPlayer() or not target:IsActive() then
+		if not target or not IsValid(target) or not target:IsPlayer() or not target:IsActive() or target:GetSubRole() ~= ROLE_INFECTED then
 			timer.Stop(name)
 			timer.Remove(name)
 		else
