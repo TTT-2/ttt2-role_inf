@@ -125,7 +125,7 @@ else -- SERVER
 	local minDelay, maxDelay = 5, 25
 
 	local function CanIdle(ply)
-		return ply and IsValid(ply) and ply:IsPlayer() and ply:IsActive() and ply:GetSubRole() == ROLE_INFECTED and (not ply.IsGhost or not ply:IsGhost())
+		return IsValid(ply) and ply:IsPlayer() and ply:IsActive() and ply:GetSubRole() == ROLE_INFECTED and (not ply.IsGhost or not ply:IsGhost())
 	end
 
 	function StartZombieIdle(target, name, startDelay)
