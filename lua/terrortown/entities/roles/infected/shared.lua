@@ -322,4 +322,10 @@ else -- SERVER
 		ply:Give("weapon_zm_carry")
 		ply:Give("weapon_ttt_unarmed")
 	end)
+
+	hook.Add("TTTPlayerSpeedModifier", "InfModifySpeed", function(ply, _, _, noLag)
+		if IsValid(ply) and ply:GetSubRole() == ROLE_INFECTED and not INFECTEDS[ply] then
+			noLag[1] = noLag[1] * 1.5
+		end
+	end)
 end
