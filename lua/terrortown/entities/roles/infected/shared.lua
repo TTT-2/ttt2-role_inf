@@ -267,6 +267,17 @@ else -- SERVER
 					-- do this clientside as well
 					net.Start("TTTInitInfected")
 					net.Send(p)
+
+					-- sometimes a whole group of players should be converted as well
+					local side_infected = {}
+					hook.Call("TTT2InfectedAddGroup", nil, side_infected)
+					for _, p2 in pairs(side_infected) do
+						AddInfected(p2, killer)
+						InitInfected(p2)
+						
+						net.Start("TTTInitInfected")
+						net.Send(p2)
+					end
 				end,
 				function(p)
 					return IsValid(p) and IsValid(killer) and killer:IsActive() and killer:GetSubRole() == ROLE_INFECTED
