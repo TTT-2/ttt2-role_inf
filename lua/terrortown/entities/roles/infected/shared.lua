@@ -147,23 +147,25 @@ else -- SERVER
 		end)
 	end
 
-	function AddInfected(target, attacker)
+	function AddInfecteds(targets, attacker)
 		local host = attacker:GetInfHost()
 		if host then
-			table.insert(INFECTEDS[host], target)
+			table.AddMissing(INFECTEDS[host], targets, true)
 		end
 
-		target:StripWeapons()
-		target:SetRole(ROLE_INFECTED)
+		for _, target in ipairs(targets) do
+			target:StripWeapons()
+			target:SetRole(ROLE_INFECTED)
 
-		local name = "sound_idle_" .. target:EntIndex()
+			local name = "sound_idle_" .. target:EntIndex()
 
-		timer.Create(name, 10, 1, function()
-			StartZombieIdle(target, name)
-		end)
+			timer.Create(name, 10, 1, function()
+				StartZombieIdle(target, name)
+			end)
 
-		target:SetMaxHealth(maxhealth:GetInt()) -- just for new infected
-
+			target:SetMaxHealth(maxhealth:GetInt()) -- just for new infected
+		end
+			
 		SendFullStateUpdate()
 	end
 
@@ -260,24 +262,20 @@ else -- SERVER
 			if IsValid(killer) and killer:IsActive() and killer:GetSubRole() == ROLE_INFECTED then
 
 				-- revive after 3s
-				ply:Revive(3, function(p)
-					AddInfected(p, killer)
-					InitInfected(p)
+				ply:Revive(3, function(p)		
+					local infectPlys = {p}
+							
+					hook.Run("TTT2ModifyInfecting", infectPlys)
+							
+					AddInfecteds(infectPlys, killer)
+					
+					for _, ply in ipairs(infectPlys) do
+						InitInfected(ply)
+					end
 
 					-- do this clientside as well
 					net.Start("TTTInitInfected")
-					net.Send(p)
-
-					-- sometimes a whole group of players should be converted as well
-					local side_infected = {}
-					hook.Call("TTT2InfectedAddGroup", nil, side_infected)
-					for _, p2 in pairs(side_infected) do
-						AddInfected(p2, killer)
-						InitInfected(p2)
-						
-						net.Start("TTTInitInfected")
-						net.Send(p2)
-					end
+					net.Send(infectPlys)
 				end,
 				function(p)
 					return IsValid(p) and IsValid(killer) and killer:IsActive() and killer:GetSubRole() == ROLE_INFECTED
