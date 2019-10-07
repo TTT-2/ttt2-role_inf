@@ -19,43 +19,46 @@ roles.InitCustomTeam(ROLE.name, { -- this creates the var "TEAM_INFECTED"
 		color = Color(131, 55, 85, 255)
 })
 
-ROLE.color = Color(131, 55, 85, 255) -- ...
-ROLE.dkcolor = Color(73, 8, 33, 255) -- ...
-ROLE.bgcolor = Color(100, 137, 58, 255) -- ...
-ROLE.abbr = "inf" -- abbreviation
-ROLE.defaultTeam = TEAM_INFECTED -- the team name: roles with same team name are working together
-ROLE.defaultEquipment = SPECIAL_EQUIPMENT -- here you can set up your own default equipment
-ROLE.surviveBonus = 0.2 -- bonus multiplier for every survive while another player was killed
-ROLE.scoreKillsMultiplier = 2 -- multiplier for kill of player of another team
-ROLE.scoreTeamKillsMultiplier = -4 -- multiplier for teamkill
-
-ROLE.conVarData = {
-	pct = 0.17, -- necessary: percentage of getting this role selected (per player)
-	maximum = 1, -- maximum amount of roles in a round
-	minPlayers = 6, -- minimum amount of players until this role is able to get selected
-	random = 10 -- randomness of getting this role selected in a round
-}
-
 function InitInfected(ply)
 	ply:SetHealth(ply:GetMaxHealth())
 end
 
+function ROLE:PreInitialize()
+	self.color = Color(131, 55, 85, 255) -- ...
+	self.dkcolor = Color(73, 8, 33, 255) -- ...
+	self.bgcolor = Color(100, 137, 58, 255) -- ...
+	self.abbr = "inf" -- abbreviation
+	self.surviveBonus = 0.2 -- bonus multiplier for every survive while another player was killed
+	self.scoreKillsMultiplier = 2 -- multiplier for kill of player of another team
+	self.scoreTeamKillsMultiplier = -4 -- multiplier for teamkill
+	
+	self.defaultTeam = TEAM_INFECTED -- the team name: roles with same team name are working together
+	self.defaultEquipment = SPECIAL_EQUIPMENT -- here you can set up your own default equipment
+
+	self.conVarData = {
+		pct = 0.17, -- necessary: percentage of getting this role selected (per player)
+		maximum = 1, -- maximum amount of roles in a round
+		minPlayers = 6, -- minimum amount of players until this role is able to get selected
+		random = 10 -- randomness of getting this role selected in a round
+	}
+end
+
 if CLIENT then -- just on client!
-	hook.Add("TTT2FinishedLoading", "InfInitT", function() -- if sync of roles has finished
-		infMat = Material("vgui/ttt/sprite_" .. INFECTED.abbr)
+	function ROLE:Initialize()
+		infMat = Material("vgui/ttt/sprite_" .. self.abbr)
 
 		-- setup here is not necessary but if you want to access the role data, you need to start here
 		-- setup basic translation !
-		LANG.AddToLanguage("English", INFECTED.name, "Infected")
-		LANG.AddToLanguage("English", TEAM_INFECTED, "TEAM Infecteds")
-		LANG.AddToLanguage("English", "hilite_win_" .. TEAM_INFECTED, "THE INF WON") -- name of base role of a team -> maybe access with GetTeamRoles(ROLES.INFECTED.team)[1].name
-		LANG.AddToLanguage("English", "win_" .. TEAM_INFECTED, "The Infected has won!") -- teamname
-		LANG.AddToLanguage("English", "info_popup_" .. INFECTED.name, [[Now its your turn! Infect them ALL.]])
-		LANG.AddToLanguage("English", "body_found_" .. INFECTED.abbr, "This was a Infected...")
-		LANG.AddToLanguage("English", "search_role_" .. INFECTED.abbr, "This person was a Infected!")
-		LANG.AddToLanguage("English", "ev_win_" .. TEAM_INFECTED, "The ill Infected won the round!")
-		LANG.AddToLanguage("English", "target_" .. INFECTED.name, "Infected")
-		LANG.AddToLanguage("English", "ttt2_desc_" .. INFECTED.name, [[The Infected needs to infect every player to win. He will infect other players by killing them.
+		LANG.AddToLanguage("English", self.name, "Infected")
+		LANG.AddToLanguage("English", self.defaultTeam, "TEAM Infecteds")
+		LANG.AddToLanguage("English", "hilite_win_" .. self.defaultTeam, "THE INF WON") -- name of base role of a team
+		LANG.AddToLanguage("English", "win_" .. self.defaultTeam, "The Infected has won!") -- teamname
+		LANG.AddToLanguage("English", "info_popup_" .. self.name, [[Now its your turn! Infect them ALL.]])
+		LANG.AddToLanguage("English", "body_found_" .. self.abbr, "This was a Infected...")
+		LANG.AddToLanguage("English", "search_role_" .. self.abbr, "This person was a Infected!")
+		LANG.AddToLanguage("English", "ev_win_" .. self.defaultTeam, "The ill Infected won the round!")
+		LANG.AddToLanguage("English", "target_" .. self.name, "Infected")
+		LANG.AddToLanguage("English", "ttt2_desc_" .. self.name, [[The Infected needs to infect every player to win. He will infect other players by killing them.
 If a player gets infected, the player looks like a zombie and is also able to infect other players. So you can build up a whole army.
 But there is one thing you need to get in mind: If the host (the main infected player with a normal model) will die or disconnect, each player that the host infected will die.
 
@@ -64,21 +67,21 @@ If there is a Jester, feel free to infect him ]])
 		---------------------------------
 
 		-- maybe this language as well...
-		LANG.AddToLanguage("Deutsch", INFECTED.name, "Infizierter")
-		LANG.AddToLanguage("Deutsch", TEAM_INFECTED, "TEAM Infizierte")
-		LANG.AddToLanguage("Deutsch", "hilite_win_" .. TEAM_INFECTED, "THE INF WON")
-		LANG.AddToLanguage("Deutsch", "win_" .. TEAM_INFECTED, "Der Infizierte hat gewonnen!")
-		LANG.AddToLanguage("Deutsch", "info_popup_" .. INFECTED.name, [[Jetzt bist du dran! Infiziere sie ALLE...]])
-		LANG.AddToLanguage("Deutsch", "body_found_" .. INFECTED.abbr, "Er war ein Infizierter...")
-		LANG.AddToLanguage("Deutsch", "search_role_" .. INFECTED.abbr, "Diese Person war ein Infizierter!")
-		LANG.AddToLanguage("Deutsch", "ev_win_" .. TEAM_INFECTED, "Der kranke Infizierte hat die Runde gewonnen!")
-		LANG.AddToLanguage("Deutsch", "target_" .. INFECTED.name, "Infizierter")
-		LANG.AddToLanguage("Deutsch", "ttt2_desc_" .. INFECTED.name, [[Der Infizierte muss alle anderen Spieler infizieren, um zu gewinnen. Dies tut er, indem er die Spieler tötet.
+		LANG.AddToLanguage("Deutsch", self.name, "Infizierter")
+		LANG.AddToLanguage("Deutsch", self.defaultTeam, "TEAM Infizierte")
+		LANG.AddToLanguage("Deutsch", "hilite_win_" .. self.defaultTeam, "THE INF WON")
+		LANG.AddToLanguage("Deutsch", "win_" .. self.defaultTeam, "Der Infizierte hat gewonnen!")
+		LANG.AddToLanguage("Deutsch", "info_popup_" .. self.name, [[Jetzt bist du dran! Infiziere sie ALLE...]])
+		LANG.AddToLanguage("Deutsch", "body_found_" .. self.abbr, "Er war ein Infizierter...")
+		LANG.AddToLanguage("Deutsch", "search_role_" .. self.abbr, "Diese Person war ein Infizierter!")
+		LANG.AddToLanguage("Deutsch", "ev_win_" .. self.defaultTeam, "Der kranke Infizierte hat die Runde gewonnen!")
+		LANG.AddToLanguage("Deutsch", "target_" .. self.name, "Infizierter")
+		LANG.AddToLanguage("Deutsch", "ttt2_desc_" .. self.name, [[Der Infizierte muss alle anderen Spieler infizieren, um zu gewinnen. Dies tut er, indem er die Spieler tötet.
 Wenn ein Spieler infiziert wird, wird er wie ein Zombie aussehen und wird ebenfalls andere Spieler infizieren können. Also erbaue Deine Armee!
 Doch es gibt eine Sache, an die Du denken solltest: Stirbt/Disconnected der Host (der erste Infizierte mit dem normalen Playermodel), stirbt auch jeder Infizierte, der von ihm infiziert wurde.
 
 Falls es einen Jester gibt, zögere nicht und infiziere ihn ]])
-	end)
+	end
 
 	net.Receive("TTTInitInfected", function()
 		InitInfected(LocalPlayer())
