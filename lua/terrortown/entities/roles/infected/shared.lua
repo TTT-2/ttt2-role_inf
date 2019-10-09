@@ -9,7 +9,7 @@ local maxhealth = CreateConVar("ttt2_inf_maxhealth_new_inf", 30, {FCVAR_ARCHIVE,
 hook.Add("TTTUlxDynamicRCVars", "TTTUlxDynamicInfCVars", function(tbl)
 	tbl[ROLE_INFECTED] = tbl[ROLE_INFECTED] or {}
 
-	table.insert(tbl[ROLE_INFECTED], {cvar = "ttt2_inf_maxhealth_new_inf", slider = true, min = 10, max = 100, desc = "Max Health for all new Infected (Def. 30)"})
+	table.insert(tbl[ROLE_INFECTED], {cvar = "ttt2_inf_maxhealth_new_inf", slider = true, min = 10, max = 100, desc = "Max Health for all new Infected (def. 30)"})
 end)
 
 -- creates global var "TEAM_INFECTED" and other required things
@@ -43,18 +43,17 @@ function ROLE:PreInitialize()
 	}
 end
 
-if CLIENT then -- just on client!
-	function ROLE:Initialize()
+function ROLE:Initialize()
+	if CLIENT then
 		infMat = Material("vgui/ttt/sprite_" .. self.abbr)
 
-		-- setup here is not necessary but if you want to access the role data, you need to start here
-		-- setup basic translation !
+		-- Role specific language elements
 		LANG.AddToLanguage("English", self.name, "Infected")
 		LANG.AddToLanguage("English", self.defaultTeam, "TEAM Infecteds")
-		LANG.AddToLanguage("English", "hilite_win_" .. self.defaultTeam, "THE INF WON") -- name of base role of a team
-		LANG.AddToLanguage("English", "win_" .. self.defaultTeam, "The Infected has won!") -- teamname
+		LANG.AddToLanguage("English", "hilite_win_" .. self.defaultTeam, "THE INF WON")
+		LANG.AddToLanguage("English", "win_" .. self.defaultTeam, "The Infected has won!")
 		LANG.AddToLanguage("English", "info_popup_" .. self.name, [[Now its your turn! Infect them ALL.]])
-		LANG.AddToLanguage("English", "body_found_" .. self.abbr, "This was a Infected...")
+		LANG.AddToLanguage("English", "body_found_" .. self.abbr, "They were an Infected!")
 		LANG.AddToLanguage("English", "search_role_" .. self.abbr, "This person was a Infected!")
 		LANG.AddToLanguage("English", "ev_win_" .. self.defaultTeam, "The ill Infected won the round!")
 		LANG.AddToLanguage("English", "target_" .. self.name, "Infected")
@@ -64,15 +63,12 @@ But there is one thing you need to get in mind: If the host (the main infected p
 
 If there is a Jester, feel free to infect him ]])
 
-		---------------------------------
-
-		-- maybe this language as well...
 		LANG.AddToLanguage("Deutsch", self.name, "Infizierter")
 		LANG.AddToLanguage("Deutsch", self.defaultTeam, "TEAM Infizierte")
 		LANG.AddToLanguage("Deutsch", "hilite_win_" .. self.defaultTeam, "THE INF WON")
 		LANG.AddToLanguage("Deutsch", "win_" .. self.defaultTeam, "Der Infizierte hat gewonnen!")
 		LANG.AddToLanguage("Deutsch", "info_popup_" .. self.name, [[Jetzt bist du dran! Infiziere sie ALLE...]])
-		LANG.AddToLanguage("Deutsch", "body_found_" .. self.abbr, "Er war ein Infizierter...")
+		LANG.AddToLanguage("Deutsch", "body_found_" .. self.abbr, "Er war ein Infizierter.")
 		LANG.AddToLanguage("Deutsch", "search_role_" .. self.abbr, "Diese Person war ein Infizierter!")
 		LANG.AddToLanguage("Deutsch", "ev_win_" .. self.defaultTeam, "Der kranke Infizierte hat die Runde gewonnen!")
 		LANG.AddToLanguage("Deutsch", "target_" .. self.name, "Infizierter")
@@ -82,11 +78,26 @@ Doch es gibt eine Sache, an die Du denken solltest: Stirbt/Disconnected der Host
 
 Falls es einen Jester gibt, zögere nicht und infiziere ihn ]])
 	end
+end
 
+if CLIENT then
 	net.Receive("TTTInitInfected", function()
 		InitInfected(LocalPlayer())
 	end)
-else -- SERVER
+end
+
+	
+if SERVER then
+	-- Give Loadout on respawn and rolechange	
+	function ROLE:GiveRoleLoadout(ply, isRoleChange)
+		ply:GiveEquipmentWeapon("weapon_inf_knife")
+	end
+
+	-- Remove Loadout on death and rolechange
+	function ROLE:RemoveRoleLoadout(ply, isRoleChange)
+		ply:StripWeapon("weapon_inf_knife")
+	end
+
 	zombie_sound_idles = {
 		"npc/zombie/zombie_voice_idle1.wav",
 		"npc/zombie/zombie_voice_idle2.wav",
