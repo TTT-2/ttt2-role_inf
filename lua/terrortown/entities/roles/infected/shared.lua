@@ -24,14 +24,13 @@ function InitInfected(ply)
 end
 
 function ROLE:PreInitialize()
-	self.color = Color(131, 55, 85, 255) -- ...
-	self.dkcolor = Color(73, 8, 33, 255) -- ...
-	self.bgcolor = Color(100, 137, 58, 255) -- ...
+	self.color = Color(131, 55, 85, 255)
+
 	self.abbr = "inf" -- abbreviation
 	self.surviveBonus = 0.2 -- bonus multiplier for every survive while another player was killed
 	self.scoreKillsMultiplier = 2 -- multiplier for kill of player of another team
 	self.scoreTeamKillsMultiplier = -4 -- multiplier for teamkill
-	
+
 	self.defaultTeam = TEAM_INFECTED -- the team name: roles with same team name are working together
 	self.defaultEquipment = SPECIAL_EQUIPMENT -- here you can set up your own default equipment
 
@@ -45,7 +44,7 @@ end
 
 function ROLE:Initialize()
 	if CLIENT then
-		infMat = Material("vgui/ttt/sprite_" .. self.abbr)
+		infMat = Material("vgui/ttt/sprite_" .. self.abbr) -- ToDo needed?
 
 		-- Role specific language elements
 		LANG.AddToLanguage("English", self.name, "Infected")
@@ -76,7 +75,7 @@ If there is a Jester, feel free to infect him ]])
 Wenn ein Spieler infiziert wird, wird er wie ein Zombie aussehen und wird ebenfalls andere Spieler infizieren können. Also erbaue Deine Armee!
 Doch es gibt eine Sache, an die Du denken solltest: Stirbt/Disconnected der Host (der erste Infizierte mit dem normalen Playermodel), stirbt auch jeder Infizierte, der von ihm infiziert wurde.
 
-Falls es einen Jester gibt, zögere nicht und infiziere ihn ]])
+Falls es einen Jester gibt, zögere nicht und infiziere ihn.]])
 	end
 end
 
@@ -86,7 +85,6 @@ if CLIENT then
 	end)
 end
 
-	
 if SERVER then
 	-- Give Loadout on respawn and rolechange	
 	function ROLE:GiveRoleLoadout(ply, isRoleChange)
@@ -179,7 +177,7 @@ if SERVER then
 
 			target:SetMaxHealth(maxhealth:GetInt()) -- just for new infected
 		end
-			
+
 		SendFullStateUpdate()
 	end
 
@@ -276,15 +274,15 @@ if SERVER then
 			if IsValid(killer) and killer:IsActive() and killer:GetSubRole() == ROLE_INFECTED then
 
 				-- revive after 3s
-				ply:Revive(3, function(p)		
+				ply:Revive(3, function(p)
 					local infectPlys = {p}
-							
+
 					hook.Run("TTT2ModifyInfecting", infectPlys)
-							
+
 					AddInfecteds(infectPlys, killer)
-					
-					for _, ply in ipairs(infectPlys) do
-						InitInfected(ply)
+
+					for _, infp in ipairs(infectPlys) do
+						InitInfected(infp)
 					end
 
 					-- do this clientside as well
