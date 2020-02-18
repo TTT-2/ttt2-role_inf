@@ -1,10 +1,7 @@
 AddCSLuaFile()
 
-SWEP.HoldType = "knife"
-
 if CLIENT then
-	SWEP.PrintName = "knife_name"
-	SWEP.Slot = 0
+	SWEP.PrintName = "infected_fists_name"
 
 	SWEP.ViewModelFlip = false
 	SWEP.ViewModelFOV = 54
@@ -21,9 +18,10 @@ end
 
 SWEP.Base = "weapon_tttbase"
 
+SWEP.HoldType = "fist"
+SWEP.ViewModel = "models/weapons/c_arms.mdl"
+SWEP.WorldModel = ""
 SWEP.UseHands = true
-SWEP.ViewModel = "models/weapons/cstrike/c_knife_t.mdl"
-SWEP.WorldModel = "models/weapons/w_knife_t.mdl"
 
 SWEP.Primary.Damage = 50
 SWEP.Primary.ClipSize = -1
@@ -38,8 +36,9 @@ SWEP.Secondary.Automatic = false
 SWEP.Secondary.Ammo = "none"
 SWEP.Secondary.Delay = 12
 
-SWEP.Kind = WEAPON_MELEE
-SWEP.WeaponID = AMMO_CROWBAR
+SWEP.Kind = WEAPON_SPECIAL
+
+SWEP.HitDistance = 64
 
 SWEP.AllowDrop = false
 SWEP.IsSilent = true
@@ -47,12 +46,43 @@ SWEP.IsSilent = true
 -- Pull out faster than standard guns
 SWEP.DeploySpeed = 2
 
+local swingSound = Sound("WeaponFrag.Throw")
+local hitSound = Sound("Flesh.ImpactHard")
+local animations = {
+	"fists_left",
+	"fists_right",
+	"fists_uppercut"
+}
+
+function SWEP:Initialize()
+	self:SetHoldType("fist")
+end
+
+function SWEP:Deploy()
+	local vm = self.Owner:GetViewModel()
+
+	vm:SendViewModelMatchingSequence(vm:LookupSequence("fists_draw"))
+	vm:SetPlaybackRate(self.DeploySpeed)
+end
+
 function SWEP:PrimaryAttack()
 	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 
 	local owner = self.Owner
 
 	if not IsValid(owner) then return end
+
+	-- animation
+	owner:SetAnimation(PLAYER_ATTACK1)
+
+	local anim = animations[math.random(1, 3)]
+
+	local vm = owner:GetViewModel()
+	vm:SendViewModelMatchingSequence(vm:LookupSequence(anim))
+
+	self:EmitSound(anim)
+
+	self:EmitSound(swingSound)
 
 	owner:LagCompensation(true)
 
@@ -62,17 +92,31 @@ function SWEP:PrimaryAttack()
 	local kmins = Vector(1, 1, 1) * -10
 	local kmaxs = Vector(1, 1, 1) * 10
 
-	local tr = util.TraceHull({start = spos, endpos = sdest, filter = owner, mask = MASK_SHOT_HULL, mins = kmins, maxs = kmaxs})
+	local tr = util.TraceHull({
+		start = spos,
+		endpos = sdest,
+		filter = owner,
+		mask = MASK_SHOT_HULL,
+		mins = kmins,
+		maxs = kmaxs
+	})
 
 	-- Hull might hit environment stuff that line does not hit
 	if not IsValid(tr.Entity) then
-		tr = util.TraceLine({start = spos, endpos = sdest, filter = owner, mask = MASK_SHOT_HULL})
+		tr = util.TraceLine({
+			start = spos,
+			endpos = sdest,
+			filter = owner,
+			mask = MASK_SHOT_HULL
+		})
 	end
 
 	local hitEnt = tr.Entity
 
 	-- effects
 	if IsValid(hitEnt) then
+		self:EmitSound(hitSound)
+
 		self:SendWeaponAnim(ACT_VM_HITCENTER)
 
 		local edata = EffectData()
@@ -160,7 +204,12 @@ function SWEP:StabKill(tr, spos, sdest)
 		if not rag then return end
 
 		-- we might find a better location
-		local rtr = util.TraceLine({start = pos, endpos = pos + norm * 40, filter = ignore, mask = MASK_SHOT_HULL})
+		local rtr = util.TraceLine({
+			start = pos,
+			endpos = pos + norm * 40,
+			filter = ignore,
+			mask = MASK_SHOT_HULL
+		})
 
 		if IsValid(rtr.Entity) and rtr.Entity == rag then
 			bone = rtr.PhysicsBone
@@ -173,7 +222,7 @@ function SWEP:StabKill(tr, spos, sdest)
 		end
 
 		local knife = ents.Create("prop_physics")
-		knife:SetModel("models/weapons/w_knife_t.mdl")
+		--knife:SetModel("models/weapons/w_knife_t.mdl")
 		knife:SetPos(pos)
 		knife:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
 		knife:SetAngles(ang)

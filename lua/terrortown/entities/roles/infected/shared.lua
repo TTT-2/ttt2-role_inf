@@ -42,43 +42,6 @@ function ROLE:PreInitialize()
 	}
 end
 
-function ROLE:Initialize()
-	if CLIENT then
-		infMat = Material("vgui/ttt/sprite_" .. self.abbr) -- ToDo needed?
-
-		-- Role specific language elements
-		LANG.AddToLanguage("English", self.name, "Infected")
-		LANG.AddToLanguage("English", self.defaultTeam, "TEAM Infecteds")
-		LANG.AddToLanguage("English", "hilite_win_" .. self.defaultTeam, "THE INF WON")
-		LANG.AddToLanguage("English", "win_" .. self.defaultTeam, "The Infected has won!")
-		LANG.AddToLanguage("English", "info_popup_" .. self.name, [[Now its your turn! Infect them ALL.]])
-		LANG.AddToLanguage("English", "body_found_" .. self.abbr, "They were an Infected!")
-		LANG.AddToLanguage("English", "search_role_" .. self.abbr, "This person was a Infected!")
-		LANG.AddToLanguage("English", "ev_win_" .. self.defaultTeam, "The ill Infected won the round!")
-		LANG.AddToLanguage("English", "target_" .. self.name, "Infected")
-		LANG.AddToLanguage("English", "ttt2_desc_" .. self.name, [[The Infected needs to infect every player to win. He will infect other players by killing them.
-If a player gets infected, the player looks like a zombie and is also able to infect other players. So you can build up a whole army.
-But there is one thing you need to get in mind: If the host (the main infected player with a normal model) will die or disconnect, each player that the host infected will die.
-
-If there is a Jester, feel free to infect him ]])
-
-		LANG.AddToLanguage("Deutsch", self.name, "Infizierter")
-		LANG.AddToLanguage("Deutsch", self.defaultTeam, "TEAM Infizierte")
-		LANG.AddToLanguage("Deutsch", "hilite_win_" .. self.defaultTeam, "THE INF WON")
-		LANG.AddToLanguage("Deutsch", "win_" .. self.defaultTeam, "Der Infizierte hat gewonnen!")
-		LANG.AddToLanguage("Deutsch", "info_popup_" .. self.name, [[Jetzt bist du dran! Infiziere sie ALLE...]])
-		LANG.AddToLanguage("Deutsch", "body_found_" .. self.abbr, "Er war ein Infizierter.")
-		LANG.AddToLanguage("Deutsch", "search_role_" .. self.abbr, "Diese Person war ein Infizierter!")
-		LANG.AddToLanguage("Deutsch", "ev_win_" .. self.defaultTeam, "Der kranke Infizierte hat die Runde gewonnen!")
-		LANG.AddToLanguage("Deutsch", "target_" .. self.name, "Infizierter")
-		LANG.AddToLanguage("Deutsch", "ttt2_desc_" .. self.name, [[Der Infizierte muss alle anderen Spieler infizieren, um zu gewinnen. Dies tut er, indem er die Spieler tötet.
-Wenn ein Spieler infiziert wird, wird er wie ein Zombie aussehen und wird ebenfalls andere Spieler infizieren können. Also erbaue Deine Armee!
-Doch es gibt eine Sache, an die Du denken solltest: Stirbt/Disconnected der Host (der erste Infizierte mit dem normalen Playermodel), stirbt auch jeder Infizierte, der von ihm infiziert wurde.
-
-Falls es einen Jester gibt, zögere nicht und infiziere ihn.]])
-	end
-end
-
 if CLIENT then
 	net.Receive("TTTInitInfected", function()
 		InitInfected(LocalPlayer())
@@ -86,14 +49,26 @@ if CLIENT then
 end
 
 if SERVER then
-	-- Give Loadout on respawn and rolechange	
+	-- Give Loadout on respawn and rolechange
 	function ROLE:GiveRoleLoadout(ply, isRoleChange)
-		ply:GiveEquipmentWeapon("weapon_inf_knife")
+		ply:GiveEquipmentWeapon("weapon_ttt_inf_fists")
+
+		if INFECTEDS[ply] then return end
+
+		ply:StripWeapon("weapon_zm_improvised")
+		ply:StripWeapon("weapon_zm_carry")
+		ply:StripWeapon("weapon_ttt_unarmed")
 	end
 
 	-- Remove Loadout on death and rolechange
 	function ROLE:RemoveRoleLoadout(ply, isRoleChange)
-		ply:StripWeapon("weapon_inf_knife")
+		ply:StripWeapon("weapon_ttt_inf_fists")
+
+		if INFECTEDS[ply] then return end
+
+		ply:Give("weapon_zm_improvised")
+		ply:Give("weapon_zm_carry")
+		ply:Give("weapon_ttt_unarmed")
 	end
 
 	zombie_sound_idles = {
@@ -230,7 +205,7 @@ if SERVER then
 
 			local wepClass = WEPS.GetClass(wep)
 
-			if not INFECTEDS[ply] and wepClass ~= "weapon_inf_knife" then
+			if not INFECTEDS[ply] and wepClass ~= "weapon_ttt_inf_fists" then
 				return false
 			end
 		end
@@ -315,33 +290,6 @@ if SERVER then
 		if IsValid(ply) and ply:IsActive() and ply:GetSubRole() == ROLE_INFECTED and not INFECTEDS[ply] then
 			return true
 		end
-	end)
-
-	-- default loadout is used if the player spawns
-	hook.Add("TTT2ModifyDefaultLoadout", "ModifyInfLoadout", function(loadout_weapons, subrole)
-		if subrole == ROLE_INFECTED then
-			for k, v in ipairs(loadout_weapons[subrole]) do
-				if v == "weapon_zm_improvised" or v == "weapon_zm_carry" or v == "weapon_ttt_unarmed" then
-					table.remove(loadout_weapons[subrole], k)
-
-					local tbl = weapons.GetStored(v)
-
-					if tbl and tbl.InLoadoutFor then
-						for k2, sr in ipairs(tbl.InLoadoutFor) do
-							if sr == subrole then
-								table.remove(tbl.InLoadoutFor, k2)
-							end
-						end
-					end
-				end
-			end
-		end
-	end)
-
-	hook.Add("TTT2InfInitNewHost", "TTT2AddInfDefWeapons", function(ply)
-		ply:Give("weapon_zm_improvised")
-		ply:Give("weapon_zm_carry")
-		ply:Give("weapon_ttt_unarmed")
 	end)
 
 	hook.Add("TTTPlayerSpeedModifier", "InfModifySpeed", function(ply, _, _, noLag)
