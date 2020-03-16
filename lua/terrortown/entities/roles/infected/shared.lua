@@ -165,9 +165,7 @@ if SERVER then
 		end
 	end
 
-	hook.Add("TTT2PreventJesterDeath", "JesterInfPreventDeath", function(ply)
-		local killer = ply.jesterKiller
-
+	hook.Add("TTT2PreventJesterWinstate", "InfPreventJesterWinstate", function(killer)
 		if IsValid(killer) and killer:GetSubRole() == ROLE_INFECTED then
 			return true
 		end
