@@ -1,4 +1,3 @@
-
 L = LANG.GetLanguageTableReference("deutsch")
 
 -- GENERAL ROLE LANGUAGE STRINGS
