@@ -125,11 +125,11 @@ function SWEP:PrimaryAttack()
 		edata:SetNormal(tr.Normal)
 		edata:SetEntity(hitEnt)
 
+		owner:SetAnimation(PLAYER_ATTACK1)
+
+		self:SendWeaponAnim(ACT_VM_MISSCENTER)
+
 		if hitEnt:IsPlayer() or hitEnt:GetClass() == "prop_ragdoll" then
-			owner:SetAnimation(PLAYER_ATTACK1)
-
-			self:SendWeaponAnim(ACT_VM_MISSCENTER)
-
 			util.Effect("BloodImpact", edata)
 		end
 	else
@@ -140,7 +140,7 @@ function SWEP:PrimaryAttack()
 		owner:SetAnimation(PLAYER_ATTACK1)
 	end
 
-	if SERVER and tr.Hit and tr.HitNonWorld and IsValid(hitEnt) and hitEnt:IsPlayer() then
+	if SERVER and tr.Hit and tr.HitNonWorld and IsValid(hitEnt) then
 		-- knife damage is never karma'd, so don't need to take that into
 		-- account we do want to avoid rounding error strangeness caused by
 		-- other damage scaling, causing a death when we don't expect one, so
