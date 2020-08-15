@@ -1,9 +1,9 @@
-L = LANG.GetLanguageTableReference("english")
+local L = LANG.GetLanguageTableReference("english")
 
 -- GENERAL ROLE LANGUAGE STRINGS
 L[INFECTED.name] = "Infected"
 L[INFECTED.defaultTeam] = "TEAM Infecteds"
-L["hilite_win_" .. INFECTED.defaultTeam] = "THE INF WON"
+L["hilite_win_" .. INFECTED.defaultTeam] = "THE INFECTED WON"
 L["win_" .. INFECTED.defaultTeam] = "The Infected has won!"
 L["info_popup_" .. INFECTED.name] = [[Now its your turn! Infect them all by killing them.]]
 L["body_found_" .. INFECTED.abbr] = "They were an Infected!"
