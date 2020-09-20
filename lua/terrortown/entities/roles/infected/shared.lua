@@ -49,6 +49,9 @@ if CLIENT then
 end
 
 if SERVER then
+	function ROLE:Initialize()
+		if JESTER then self.networkRoles = {JESTER} end
+	end
 	-- Give Loadout on respawn and rolechange
 	function ROLE:GiveRoleLoadout(ply, isRoleChange)
 		ply:GiveEquipmentWeapon("weapon_ttt_inf_fists")
