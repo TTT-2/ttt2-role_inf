@@ -12,11 +12,9 @@ hook.Add("TTTUlxDynamicRCVars", "TTTUlxDynamicInfCVars", function(tbl)
 	table.insert(tbl[ROLE_INFECTED], {cvar = "ttt2_inf_maxhealth_new_inf", slider = true, min = 10, max = 100, desc = "Max Health for all new Infected (def. 30)"})
 end)
 
--- creates global var "TEAM_INFECTED" and other required things
--- TEAM_[name], data: e.g. icon, color, ...
-roles.InitCustomTeam(ROLE.name, { -- this creates the var "TEAM_INFECTED"
-		icon = "vgui/ttt/dynamic/roles/icon_inf",
-		color = Color(131, 55, 85, 255)
+roles.InitCustomTeam(ROLE.name, {
+	icon = "vgui/ttt/dynamic/roles/icon_inf",
+	color = Color(131, 55, 85, 255)
 })
 
 function InitInfected(ply)
@@ -26,19 +24,21 @@ end
 function ROLE:PreInitialize()
 	self.color = Color(131, 55, 85, 255)
 
-	self.abbr = "inf" -- abbreviation
-	self.surviveBonus = 0.2 -- bonus multiplier for every survive while another player was killed
-	self.scoreKillsMultiplier = 2 -- multiplier for kill of player of another team
-	self.scoreTeamKillsMultiplier = -4 -- multiplier for teamkill
+	self.abbr = "inf"
+	self.score.surviveBonusMultiplier = 0.2
+	self.score.timelimitMultiplier = -0.5
+	self.score.killsMultiplier = 2
+	self.score.teamKillsMultiplier = -4
+	self.score.bodyFoundMuliplier = 0
 
-	self.defaultTeam = TEAM_INFECTED -- the team name: roles with same team name are working together
-	self.defaultEquipment = SPECIAL_EQUIPMENT -- here you can set up your own default equipment
+	self.defaultTeam = TEAM_INFECTED
+	self.defaultEquipment = SPECIAL_EQUIPMENT
 
 	self.conVarData = {
-		pct = 0.17, -- necessary: percentage of getting this role selected (per player)
-		maximum = 1, -- maximum amount of roles in a round
-		minPlayers = 6, -- minimum amount of players until this role is able to get selected
-		random = 10 -- randomness of getting this role selected in a round
+		pct = 0.17,
+		maximum = 1,
+		minPlayers = 6,
+		random = 10
 	}
 end
 
