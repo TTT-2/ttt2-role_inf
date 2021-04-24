@@ -17,3 +17,7 @@ Si hay Jester, podrá infectarlo de igual manera. Sin perder.]]
 
 -- OTHER ROLE LANGUAGE STRINGS
 L["infected_fists_name"] = "Garras"
+--L["tooltip_infection_score"] = "Infection: {score}"
+--L["infection_score"] = "Infection:"
+--L["title_event_infection"] = "A player got infected"
+--L["desc_event_infection"] = "{host} has infected {infected} ({irole} / {iteam}) by killing them."

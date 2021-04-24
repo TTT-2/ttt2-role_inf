@@ -2,6 +2,7 @@ if SERVER then
 	AddCSLuaFile()
 
 	resource.AddFile("materials/vgui/ttt/dynamic/roles/icon_inf.vmt")
+	resource.AddFile("materials/vgui/ttt/vskin/events/infection.vmt")
 end
 
 local maxhealth = CreateConVar("ttt2_inf_maxhealth_new_inf", 30, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
@@ -252,7 +253,12 @@ if SERVER then
 
 					hook.Run("TTT2ModifyInfecting", infectPlys)
 
+					for i = 1, #infectPlys do
+						events.Trigger(EVENT_INFECTION, killer, infectPlys[i])
+					end
+
 					AddInfecteds(infectPlys, killer)
+
 
 					for _, infp in ipairs(infectPlys) do
 						InitInfected(infp)

@@ -3,7 +3,7 @@ local L = LANG.GetLanguageTableReference("deutsch")
 -- GENERAL ROLE LANGUAGE STRINGS
 L[INFECTED.name] = "Infizierter"
 L[INFECTED.defaultTeam] = "Team Infizierte"
-L["hilite_win_" .. INFECTED.defaultTeam] = "DIE INFIZIERTEN GEWINNEN"
+L["hilite_win_" .. INFECTED.defaultTeam] = "TEAM INFIZIERTE GEWANN"
 L["win_" .. INFECTED.defaultTeam] = "Der Infizierte hat gewonnen!"
 L["info_popup_" .. INFECTED.name] = [[Jetzt bist du dran! Infiziere sie alle, indem due sie tötest.]]
 L["body_found_" .. INFECTED.abbr] = "Er war ein Infizierter."
@@ -18,3 +18,7 @@ Falls es einen Jester gibt, zögere nicht und infiziere ihn.]]
 
 -- OTHER ROLE LANGUAGE STRINGS
 L["infected_fists_name"] = "Infizierte Fäuse"
+L["tooltip_infection_score"] = "Infektion: {score}"
+L["infection_score"] = "Infektion:"
+L["title_event_infection"] = "Ein Spieler wurde infiziert"
+L["desc_event_infection"] = "{host} hat {infected} ({irole} / {iteam}) getötet und dadurch infiziert."
