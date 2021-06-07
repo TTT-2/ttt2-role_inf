@@ -37,6 +37,8 @@ SWEP.Secondary.Ammo = "none"
 SWEP.Secondary.Delay = 12
 
 SWEP.Kind = WEAPON_SPECIAL
+SWEP.CanBuy = nil
+SWEP.notBuyable = true
 
 SWEP.HitDistance = 64
 
