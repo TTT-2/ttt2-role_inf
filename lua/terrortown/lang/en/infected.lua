@@ -22,3 +22,5 @@ L["tooltip_infection_score"] = "Infection: {score}"
 L["infection_score"] = "Infection:"
 L["title_event_infection"] = "A player got infected"
 L["desc_event_infection"] = "{host} has infected {infected} ({irole} / {iteam}) by killing them."
+
+L["label_inf_maxhealth_new_inf"] = "Max Health for all new Infected"
