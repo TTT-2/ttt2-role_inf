@@ -7,12 +7,6 @@ end
 
 local maxhealth = CreateConVar("ttt2_inf_maxhealth_new_inf", 30, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
 
-hook.Add("TTTUlxDynamicRCVars", "TTTUlxDynamicInfCVars", function(tbl)
-	tbl[ROLE_INFECTED] = tbl[ROLE_INFECTED] or {}
-
-	table.insert(tbl[ROLE_INFECTED], {cvar = "ttt2_inf_maxhealth_new_inf", slider = true, min = 10, max = 100, desc = "Max Health for all new Infected (def. 30)"})
-end)
-
 roles.InitCustomTeam(ROLE.name, {
 	icon = "vgui/ttt/dynamic/roles/icon_inf",
 	color = Color(131, 55, 85, 255)
@@ -44,6 +38,18 @@ function ROLE:PreInitialize()
 end
 
 if CLIENT then
+	function ROLE:AddToSettingsMenu(parent)
+		local form = vgui.CreateTTT2Form(parent, "header_roles_additional")
+
+		form:MakeSlider({
+			serverConvar = "ttt2_inf_maxhealth_new_inf",
+			label = "label_inf_maxhealth_new_inf",
+			min = 10,
+			max = 100,
+			decimal = 0
+		})
+	end
+
 	net.Receive("TTTInitInfected", function()
 		InitInfected(LocalPlayer())
 	end)
