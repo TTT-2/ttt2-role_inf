@@ -23,4 +23,4 @@ L["infection_score"] = "Infektion:"
 L["title_event_infection"] = "Ein Spieler wurde infiziert"
 L["desc_event_infection"] = "{host} hat {infected} ({irole} / {iteam}) getötet und dadurch infiziert."
 
-L["label_inf_maxhealth_new_inf"] = "Maximale Gesundheit für alle neuen Infizierten"
+L["label_inf_maxhealth_new_inf"] = "Maximale Gesundheit für neue Infizierte Zombies"
